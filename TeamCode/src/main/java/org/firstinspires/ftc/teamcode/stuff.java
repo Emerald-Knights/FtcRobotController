@@ -7,14 +7,14 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@Autonomous(name = "auton", group = "auton")
+@Autonomous(name = "not auton", group = "auton")
 public class stuff extends LinearOpMode{
     robot boWei = new robot();
     @Override
     public void runOpMode(){
         boWei.init(hardwareMap, this);
         waitForStart();
-        boWei.parking(3000, 1);
+        boWei.move(3000, 1);
     }
 
 
