@@ -25,11 +25,12 @@ public class robot {
     TFObjectDetector tfod;
     Servo leftLift;
     Servo rightLift;
-    CRServo upwardThing;
+    DcMotor upwards;
 
     final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     final String LABEL_FIRST_ELEMENT = "Quad";
     final String LABEL_SECOND_ELEMENT = "Single";
+
     public void init (HardwareMap hardwareMap, LinearOpMode linearOpMode){
         launch = hardwareMap.get(DcMotor.class, "launch");
         spin = hardwareMap.get(DcMotor.class,"spin");
@@ -37,11 +38,10 @@ public class robot {
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-        upwardThing = hardwareMap.get(CRServo.class, "upwardThing");
         leftLift=hardwareMap.get(Servo.class, "leftLift");
         rightLift=hardwareMap.get(Servo.class, "rightLift");
 
-
+        upwards=hardwareMap.get(DcMotor.class, "upwards");
 
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection((DcMotorSimple.Direction.REVERSE));
@@ -69,12 +69,14 @@ public class robot {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.8f;
+        tfodParameters.minResultConfidence = 0.6f;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
     public void move(int ticks, int direction) {
         DcMotor m= rightBack;
+        m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (Math.abs(m.getCurrentPosition()) < Math.abs(ticks) && linearOpMode.opModeIsActive()) {
             if (Math.abs(m.getCurrentPosition()) <= Math.abs(ticks/3.0)) {
                 leftFront.setPower(direction *((Math.abs(m.getCurrentPosition())/ Math.abs(ticks/3.0)) * 0.5 + 0.3));
@@ -112,24 +114,25 @@ public class robot {
         leftBack.setPower(0);
         rightFront.setPower(0);
         rightBack.setPower(0);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void strafe(int ticks, int direction) {
-        while (Math.abs(rightFront.getCurrentPosition()) < ticks && linearOpMode.opModeIsActive()) {
-            if (Math.abs(rightFront.getCurrentPosition()) <= ticks/3.0) {
-                leftFront.setPower(-direction *((Math.abs(rightFront.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
-                leftBack.setPower(direction * ((Math.abs(rightFront.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
-                rightFront.setPower(direction * ((Math.abs(rightFront.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
-                rightBack.setPower(-direction * ((Math.abs(rightFront.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
-                //linearOpMode.telemetry.addData("rightFront:", rightFront.getCurrentPosition());
+        DcMotor m=rightBack;
+        while (Math.abs(m.getCurrentPosition()) < ticks && linearOpMode.opModeIsActive()) {
+            if (Math.abs(m.getCurrentPosition()) <= ticks/3.0) {
+                leftFront.setPower(-direction *((Math.abs(m.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
+                leftBack.setPower(direction * ((Math.abs(m.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
+                rightFront.setPower(direction * ((Math.abs(m.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
+                rightBack.setPower(-direction * ((Math.abs(m.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
+                //linearOpMode.telemetry.addData("m:", m.getCurrentPosition());
                 //telemetry.update();
                 //try {
                 //Thread.sleep(10);
                 //} catch (InterruptedException e) {
                 //}
-            } else if (Math.abs(rightFront.getCurrentPosition() )< 2.0/3 * ticks && ticks/3.0 < Math.abs(rightFront.getCurrentPosition())) {
+            } else if (Math.abs(m.getCurrentPosition() )< 2.0/3 * ticks && ticks/3.0 < Math.abs(m.getCurrentPosition())) {
                 leftFront.setPower(-direction * (0.8));
                 leftBack.setPower(direction * (0.8));
                 rightFront.setPower(direction * (0.8));
@@ -139,13 +142,13 @@ public class robot {
 //                } catch (InterruptedException e) {
 //                }
             }
-            else if (Math.abs(rightFront.getCurrentPosition()) >= 2.0/3.0 * ticks){
-                leftFront.setPower(-direction * (((ticks - Math.abs(rightFront.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
-                leftBack.setPower(direction * (((ticks - Math.abs(rightFront.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
-                rightFront.setPower(direction * (((ticks - Math.abs(rightFront.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
-                rightBack.setPower(-direction * (((ticks - Math.abs(rightFront.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
+            else if (Math.abs(m.getCurrentPosition()) >= 2.0/3.0 * ticks){
+                leftFront.setPower(-direction * (((ticks - Math.abs(m.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
+                leftBack.setPower(direction * (((ticks - Math.abs(m.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
+                rightFront.setPower(direction * (((ticks - Math.abs(m.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
+                rightBack.setPower(-direction * (((ticks - Math.abs(m.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
             }
-            linearOpMode.telemetry.addData("leftFront:", Math.abs(rightFront.getCurrentPosition()));
+            linearOpMode.telemetry.addData("leftFront:", Math.abs(m.getCurrentPosition()));
             linearOpMode.telemetry.update();
 
         }
@@ -153,8 +156,8 @@ public class robot {
         leftBack.setPower(0);
         rightFront.setPower(0);
         rightBack.setPower(0);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public double checkAngle(double angle){
         return angle % Math.PI;
