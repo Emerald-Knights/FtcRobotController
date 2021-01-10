@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -16,7 +17,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 public class robot {
-    DcMotor rightFront, rightBack, leftFront, leftBack, spin, launch;
+    DcMotor rightFront, rightBack, leftFront, leftBack, spin;
+    DcMotorEx launch;
     BNO055IMU imu;
     Orientation angle;
     LinearOpMode linearOpMode;
@@ -32,7 +34,7 @@ public class robot {
     final String LABEL_SECOND_ELEMENT = "Single";
 
     public void init (HardwareMap hardwareMap, LinearOpMode linearOpMode){
-        launch = hardwareMap.get(DcMotor.class, "launch");
+        launch = (DcMotorEx) hardwareMap.get(DcMotor.class, "launch");
         spin = hardwareMap.get(DcMotor.class,"spin");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
@@ -52,7 +54,7 @@ public class robot {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.getAngularOrientation();
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
         angle = imu.getAngularOrientation();
     }
@@ -161,6 +163,15 @@ public class robot {
     }
     public double checkAngle(double angle){
         return angle % Math.PI;
+    }
+    public double angleWrap(double angle){
+        while(angle>Math.PI){
+            angle-=2*Math.PI;
+        }
+        while(angle<-Math.PI){
+            angle+=2*Math.PI;
+        }
+        return angle;
     }
 
     public void turning(double radians){

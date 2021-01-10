@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name="drive", group="f")
-public class spin extends LinearOpMode{
+@TeleOp(name="fieldDrive", group="f")
+public class fieldOriented extends LinearOpMode{
     robot boWei = new robot();
     @Override
     public void runOpMode(){
@@ -77,7 +77,7 @@ public class spin extends LinearOpMode{
                     isMoving = false;
                 }
                 else if (!isMoving){
-                    boWei.launch.setVelocity(5, AngleUnit.RADIANS); //450
+                    boWei.launch.setVelocity(5, AngleUnit.RADIANS); //goes to ~6
                     isMoving = true;
                 }
                 aIsPressed = true;
@@ -119,27 +119,39 @@ public class spin extends LinearOpMode{
                 leftPressed = false;
             }
 
-            double lf = ly + rx + lx;
-            double lb = ly + rx - lx;
-            double rf = ly - rx - lx;
-            double rb = ly - rx + lx;
+            double magnitude= Math.hypot(ly, lx);
+            double angle= boWei.angleWrap(Math.atan2(ly, -lx)-Math.PI/4 + boWei.imu.getAngularOrientation().firstAngle);
 
+            double lf = (magnitude*Math.sin(angle) +rx)*.8;
+            double lb = (magnitude*Math.cos(angle) +rx)*.8;
+            double rf = (magnitude*Math.cos(angle) -rx)*.8;
+            double rb = (magnitude*Math.sin(angle) -rx)*.8;
 
             double max = Math.max(Math.max(Math.abs(lb), Math.abs(lf)), Math.max(Math.abs(rb), Math.abs(rf)));
-            double magnitude = Math.sqrt((lx * lx) + (ly * ly) + (rx * rx));
-            double ratio = magnitude / max;
+            double mag=Math.sqrt((lx * lx) + (ly * ly) + (rx * rx));
+            double ratio = mag / max;
             if (max == 0) {
                 ratio=0;
             }
+
+
+
+
+            //double max = Math.max(Math.max(Math.abs(lb), Math.abs(lf)), Math.max(Math.abs(rb), Math.abs(rf)));
+            //double magnitude = Math.sqrt((lx * lx) + (ly * ly) + (rx * rx));
+            //double ratio = magnitude / max;
+            //if (max == 0) {
+            //    ratio=0;
+            //}
             telemetry.addData("LF", lf);
             telemetry.addData("LB", lb);
             telemetry.addData("RF", rf);
             telemetry.addData("RB", rb);
             telemetry.addData("ratio", ratio);
-            telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
-
             telemetry.addData("position", boWei.rightLift.getPosition());
             telemetry.addData("Button B:", gamepad2.b);
+            telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
+            telemetry.addData("angle", boWei.imu.getAngularOrientation().firstAngle);
             telemetry.update();
             boWei.leftFront.setPower(lf * ratio * toggle);
             boWei.leftBack.setPower(lb * ratio * toggle);
