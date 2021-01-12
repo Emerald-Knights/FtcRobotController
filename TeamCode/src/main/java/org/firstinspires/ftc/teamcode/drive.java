@@ -13,8 +13,9 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name="drive", group="f")
-public class spin extends LinearOpMode{
+public class drive extends LinearOpMode{
     robot boWei = new robot();
+
     @Override
     public void runOpMode(){
         boWei.init(hardwareMap, this);
@@ -24,11 +25,19 @@ public class spin extends LinearOpMode{
         boolean isMoving = false;
         boolean aIsPressed = false;
         boolean leftPressed = false;
+        boolean rightPressed=false;
         boolean slowmodeActive = false;
+        boolean dLeftHeld=false;
+        boolean dRightHeld=false;
+        boolean dUpHeld = false;
+        boolean ddownHeld = false;
         double toggle = 1;
 
+        double rate=1;
         boolean bIsPressed=false;
         boolean collecting=false;
+
+        boolean fieldOriented= false;
         while(boWei.linearOpMode.opModeIsActive()){
             double lx=gamepad1.left_stick_x;
             double ly=-gamepad1.left_stick_y;
@@ -46,7 +55,7 @@ public class spin extends LinearOpMode{
             if (Math.abs(rx) <= 0.15) {
                 rx = 0;
             }
-
+/*
             //shooter levels
             if(gamepad2.dpad_up){
                 boWei.leftLift.setPosition(.46); //third thing
@@ -56,6 +65,52 @@ public class spin extends LinearOpMode{
                 boWei.leftLift.setPosition(.43); //powershot
                 boWei.rightLift.setPosition(.53);
             }
+
+ */
+            if (gamepad2.dpad_up && !dUpHeld){
+                rate++;
+                if (rate > 6){
+                    rate=6;
+                }
+                dUpHeld = true;
+            }
+            if (!gamepad2.dpad_up){
+                dUpHeld = false;
+            }
+            if (gamepad2.dpad_down && !ddownHeld){
+                rate--;
+                if (rate < 0){
+                    rate= 0;
+                }
+
+                ddownHeld = true;
+            }
+            if (!gamepad2.dpad_down){
+                ddownHeld = false;
+            }
+
+            if(gamepad2.dpad_left && !dLeftHeld){
+                rate-=.1;
+                if(rate<0){
+                    rate=0;
+                }
+                dLeftHeld=true;
+            }
+            if(!gamepad2.dpad_left){
+                dLeftHeld=false;
+            }
+            if(gamepad2.dpad_right&& !dRightHeld){
+                rate+=.1;
+                if(rate>6){
+                    rate=6;
+                }
+
+                dRightHeld=true;
+            }
+            if(!gamepad2.dpad_right){
+                dRightHeld=false;
+            }
+
 
             //collection
             if (gamepad2.left_bumper){
@@ -71,19 +126,23 @@ public class spin extends LinearOpMode{
             //launcher
             if(gamepad2.a && !aIsPressed && !gamepad2.start){
                 if (isMoving) {
-                    boWei.launch.setPower(0);
                     telemetry.speak("Anthony is gay");
-
                     isMoving = false;
                 }
                 else if (!isMoving){
-                    boWei.launch.setVelocity(5, AngleUnit.RADIANS); //450
                     isMoving = true;
                 }
                 aIsPressed = true;
             }
             if (!gamepad2.a){
                 aIsPressed = false;
+            }
+
+            if(isMoving){
+                boWei.launch.setVelocity(rate, AngleUnit.RADIANS);
+            }
+            else{
+                boWei.launch.setVelocity(0, AngleUnit.RADIANS);
             }
 
             //upwards
@@ -106,41 +165,84 @@ public class spin extends LinearOpMode{
                 if (!slowmodeActive){
                     toggle = 0.5;
                     slowmodeActive = true;
-                    telemetry.speak("your ass");
+                    telemetry.speak("Slowmode, activated");
                 }
                 else if (slowmodeActive) {
                     toggle = 1;
                     slowmodeActive = false;
-                    telemetry.speak("what the fuck");
+                    telemetry.speak("Normal mode, activated");
                 }
                 leftPressed = true;
             }
+
+            if(gamepad1.left_stick_button && gamepad1.right_stick_button && !leftPressed &&! rightPressed){
+                fieldOriented= !fieldOriented;
+                if(fieldOriented){
+                    telemetry.speak("field oriented, activated");
+                }
+                else{
+                    telemetry.speak("robot oriented, activated");
+                }
+            }
+
             if(!gamepad1.left_stick_button){
                 leftPressed = false;
             }
-
-            double lf = ly + rx + lx;
-            double lb = ly + rx - lx;
-            double rf = ly - rx - lx;
-            double rb = ly - rx + lx;
-
-
-            double max = Math.max(Math.max(Math.abs(lb), Math.abs(lf)), Math.max(Math.abs(rb), Math.abs(rf)));
-            double magnitude = Math.sqrt((lx * lx) + (ly * ly) + (rx * rx));
-            double ratio = magnitude / max;
-            if (max == 0) {
-                ratio=0;
+            if(!gamepad1.right_stick_button){
+                rightPressed=false;
             }
+
+
+            double lf;
+            double lb;
+            double rf;
+            double rb;
+
+            double ratio;
+
+            if(fieldOriented){
+                double magnitude= Math.hypot(ly, lx);
+                double angle= boWei.angleWrap(Math.atan2(ly, -lx)-Math.PI/4 + boWei.imu.getAngularOrientation().firstAngle);
+
+                lf = (magnitude*Math.sin(angle) +rx)*.8;
+                lb = (magnitude*Math.cos(angle) +rx)*.8;
+                rf = (magnitude*Math.cos(angle) -rx)*.8;
+                rb = (magnitude*Math.sin(angle) -rx)*.8;
+
+                double max = Math.max(Math.max(Math.abs(lb), Math.abs(lf)), Math.max(Math.abs(rb), Math.abs(rf)));
+                double mag=Math.sqrt((lx * lx) + (ly * ly) + (rx * rx));
+                ratio = mag / max;
+                if (max == 0) {
+                    ratio=0;
+                }
+            }
+
+            else{
+                lf = ly + rx + lx;
+                lb = ly + rx - lx;
+                rf = ly - rx - lx;
+                rb = ly - rx + lx;
+
+
+                double max = Math.max(Math.max(Math.abs(lb), Math.abs(lf)), Math.max(Math.abs(rb), Math.abs(rf)));
+                double magnitude = Math.sqrt((lx * lx) + (ly * ly) + (rx * rx));
+                ratio = magnitude / max;
+                if (max == 0) {
+                    ratio=0;
+                }
+            }
+
+
             telemetry.addData("LF", lf);
             telemetry.addData("LB", lb);
             telemetry.addData("RF", rf);
             telemetry.addData("RB", rb);
-            telemetry.addData("ratio", ratio);
             telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
-
-            telemetry.addData("position", boWei.rightLift.getPosition());
-            telemetry.addData("Button B:", gamepad2.b);
+            telemetry.addData("tick/s", boWei.launch.getVelocity());
+            telemetry.addData("rate", rate);
+            telemetry.addData("Field oriented: ", fieldOriented);
             telemetry.update();
+
             boWei.leftFront.setPower(lf * ratio * toggle);
             boWei.leftBack.setPower(lb * ratio * toggle);
             boWei.rightFront.setPower(rf * ratio * toggle);
