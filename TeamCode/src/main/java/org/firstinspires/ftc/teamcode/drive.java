@@ -38,10 +38,16 @@ public class drive extends LinearOpMode{
         boolean collecting=false;
 
         boolean fieldOriented= false;
+
+        boolean prevRStick=false;
+        boolean prevLStick=false;
         while(boWei.linearOpMode.opModeIsActive()){
             double lx=gamepad1.left_stick_x;
             double ly=-gamepad1.left_stick_y;
             double rx=gamepad1.right_stick_x;
+            
+            boolean lsb=gamepad1.left_stick_button;
+            boolean rsb=gamepad1.right_stick_button;
 
             //deadzone
             if (Math.abs(lx) <= 0.15) {
@@ -161,7 +167,7 @@ public class drive extends LinearOpMode{
                 bIsPressed=false;
             }
 
-            if (gamepad1.left_stick_button && !leftPressed){
+            if (!lsb &&!rsb && prevLStick){
                 if (!slowmodeActive){
                     toggle = 0.5;
                     slowmodeActive = true;
@@ -172,10 +178,10 @@ public class drive extends LinearOpMode{
                     slowmodeActive = false;
                     telemetry.speak("Normal mode, activated");
                 }
-                leftPressed = true;
+                //leftPressed = true;
             }
 
-            if(gamepad1.left_stick_button && gamepad1.right_stick_button && !leftPressed &&! rightPressed){
+            if(lsb && rsb &&!leftPressed && !rightPressed){
                 fieldOriented= !fieldOriented;
                 if(fieldOriented){
                     telemetry.speak("field oriented, activated");
@@ -183,12 +189,14 @@ public class drive extends LinearOpMode{
                 else{
                     telemetry.speak("robot oriented, activated");
                 }
+                leftPressed=true;
+                rightPressed=true;
             }
 
-            if(!gamepad1.left_stick_button){
+            if(!lsb){
                 leftPressed = false;
             }
-            if(!gamepad1.right_stick_button){
+            if(!rsb){
                 rightPressed=false;
             }
 
@@ -247,6 +255,9 @@ public class drive extends LinearOpMode{
             boWei.leftBack.setPower(lb * ratio * toggle);
             boWei.rightFront.setPower(rf * ratio * toggle);
             boWei.rightBack.setPower(rb * ratio * toggle);
+
+            prevLStick=lsb;
+            prevRStick=rsb;
         }
 
     }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -14,8 +15,8 @@ public class webcamView extends LinearOpMode {
     @Override
     public void runOpMode() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        cam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        //        cam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        //cam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        cam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         pipeline = new ringPipeline();
         cam.setPipeline(pipeline);
         cam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -41,6 +42,11 @@ public class webcamView extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
+            telemetry.addData("rings", pipeline.getRings());
+            telemetry.addData("ratio", pipeline.getRatio());
+            double[] colors= pipeline.getColor();
+            telemetry.addData("colors", "Y: " + colors[0] + " Cr: " + colors[1] + " Cb: " + colors[2]);
+            telemetry.update();
             sleep(100);
         }
     }
