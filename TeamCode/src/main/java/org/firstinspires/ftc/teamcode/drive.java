@@ -10,17 +10,22 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 
+import static org.firstinspires.ftc.teamcode.utilities.*;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.opencv.core.Point;
 
 @TeleOp(name="drive", group="f")
 public class drive extends LinearOpMode{
     robot boWei = new robot();
-
+    Point goal =new Point(0,0);
     @Override
     public void runOpMode(){
         boWei.init(hardwareMap, this);
         //float current = 0;
-        float currentVex = 0;
+        //float currentVex = 0;
+        boWei.location.setPosition(robot.endX, robot.endY, robot.endAngle);
+
         waitForStart();
         boolean isMoving = false;
         boolean aIsPressed = false;
@@ -32,8 +37,12 @@ public class drive extends LinearOpMode{
         boolean dUpHeld = false;
         boolean ddownHeld = false;
         double toggle = 1;
+        boolean lbumpPressed=false;
+        boolean yIsPressed=false;
 
+        boolean distanceBasedShoot=false;
         double rate=1;
+
         boolean bIsPressed=false;
         boolean collecting=false;
 
@@ -41,13 +50,18 @@ public class drive extends LinearOpMode{
 
         boolean prevRStick=false;
         boolean prevLStick=false;
-        while(boWei.linearOpMode.opModeIsActive()){
+
+        boolean aimLock=false;
+
+        while(opModeIsActive()){
             double lx=gamepad1.left_stick_x;
             double ly=-gamepad1.left_stick_y;
             double rx=gamepad1.right_stick_x;
             
             boolean lsb=gamepad1.left_stick_button;
             boolean rsb=gamepad1.right_stick_button;
+
+            boolean lbump= gamepad1.left_bumper;
 
             //deadzone
             if (Math.abs(lx) <= 0.15) {
@@ -136,6 +150,7 @@ public class drive extends LinearOpMode{
                     isMoving = false;
                 }
                 else if (!isMoving){
+                    telemetry.speak("pew pew");
                     isMoving = true;
                 }
                 aIsPressed = true;
@@ -143,8 +158,18 @@ public class drive extends LinearOpMode{
             if (!gamepad2.a){
                 aIsPressed = false;
             }
+            if(gamepad2.y && !yIsPressed){
+                distanceBasedShoot=!distanceBasedShoot;
+                yIsPressed=true;
+            }
+            if(!gamepad2.y){
+                yIsPressed=false;
+            }
 
             if(isMoving){
+                if(distanceBasedShoot){
+                    rate=.0136904762 * (Math.hypot(goal.x-boWei.getX(), goal.y-boWei.getY()))+3.542857143;
+                }
                 boWei.launch.setVelocity(rate, AngleUnit.RADIANS);
             }
             else{
@@ -167,7 +192,7 @@ public class drive extends LinearOpMode{
                 bIsPressed=false;
             }
 
-            if (!lsb &&!rsb && prevLStick){
+            if (lsb && !leftPressed){
                 if (!slowmodeActive){
                     toggle = 0.5;
                     slowmodeActive = true;
@@ -178,18 +203,12 @@ public class drive extends LinearOpMode{
                     slowmodeActive = false;
                     telemetry.speak("Normal mode, activated");
                 }
-                //leftPressed = true;
+                leftPressed = true;
             }
 
-            if(lsb && rsb &&!leftPressed && !rightPressed){
-                fieldOriented= !fieldOriented;
-                if(fieldOriented){
-                    telemetry.speak("field oriented, activated");
-                }
-                else{
-                    telemetry.speak("robot oriented, activated");
-                }
-                leftPressed=true;
+            if(rsb && !rightPressed){
+                aimLock= !aimLock;
+
                 rightPressed=true;
             }
 
@@ -200,6 +219,24 @@ public class drive extends LinearOpMode{
                 rightPressed=false;
             }
 
+            if(lbump && !lbumpPressed){
+                fieldOriented=!fieldOriented;
+                if(fieldOriented){
+                    telemetry.speak("field oriented, activated");
+                }
+                else{
+                    telemetry.speak("robot oriented, activated");
+                }
+                lbumpPressed=true;
+            }
+            if(!lbump){
+                lbumpPressed=false;
+            }
+
+            if(aimLock){
+                double angleDiff= angleWrap(boWei.getHeading()- Math.atan2(goal.x-boWei.getY(), goal.y-boWei.getX()));
+                rx=angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
+            }
 
             double lf;
             double lb;
@@ -210,7 +247,7 @@ public class drive extends LinearOpMode{
 
             if(fieldOriented){
                 double magnitude= Math.hypot(ly, lx);
-                double angle= boWei.angleWrap(Math.atan2(ly, -lx)-Math.PI/4 + boWei.imu.getAngularOrientation().firstAngle);
+                double angle= angleWrap(Math.atan2(ly, -lx)-Math.PI/4 + boWei.getHeading());
 
                 lf = (magnitude*Math.sin(angle) +rx)*.8;
                 lb = (magnitude*Math.cos(angle) +rx)*.8;

@@ -105,7 +105,12 @@ public class blue extends LinearOpMode {
         boWei.spin.setPower(0);
         boWei.upwards.setPower(0);
         boWei.launch.setPower(0);
+
+        robot.endX=boWei.getX();
+        robot.endY=boWei.getY();
+        robot.endAngle=boWei.imu.getAngularOrientation().firstAngle;
     }
+
 }
 //yoink
 //hi blah blah blah what is this

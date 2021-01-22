@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -15,9 +16,19 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+
+import static org.firstinspires.ftc.teamcode.utilities.*;
 
 public class robot {
+    public static double endX=0;
+    public static double endY=0;
+    public static double endAngle;
+
     DcMotor rightFront, rightBack, leftFront, leftBack, spin;
+    DcMotor leftOdo, rightOdo, horizontalOdo;
     DcMotorEx launch;
     BNO055IMU imu;
     Orientation angle;
@@ -28,6 +39,10 @@ public class robot {
     Servo leftLift;
     Servo rightLift;
     DcMotor upwards;
+
+    Position location;
+    OpenCvCamera cam;
+    ringPipeline pipeline;
 
     final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     final String LABEL_FIRST_ELEMENT = "Quad";
@@ -43,6 +58,10 @@ public class robot {
         leftLift=hardwareMap.get(Servo.class, "leftLift");
         rightLift=hardwareMap.get(Servo.class, "rightLift");
 
+        leftOdo= hardwareMap.get(DcMotor.class, "leftFront");
+        rightOdo = hardwareMap.get(DcMotor.class, "rightFront");
+        horizontalOdo = hardwareMap.get(DcMotor.class, "leftBack");
+
         upwards=hardwareMap.get(DcMotor.class, "upwards");
 
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -57,7 +76,24 @@ public class robot {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
         angle = imu.getAngularOrientation();
+
+        location= new Position(0, 0, angle.firstAngle, leftOdo, rightOdo, horizontalOdo, imu, linearOpMode);
     }
+    public void initOpenCV(){
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        cam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        pipeline = new ringPipeline();
+        cam.setPipeline(pipeline);
+        cam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                cam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+        });
+    }
+
     public void initTF(){
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = "AZrZbhj/////AAAAmQF53NIZpEu8twb/VTB2FVWHbBhbMfb3tV+BUuyjHQKpKVPMUg/QLWJr3ZruBFCpSZOIe4Ss5JD6EuVJdnIksAIDC0sxSf9s3JX/QadoDOgzRLZgWF8E19KI6tUD5Anf1QBJNfnzIrrySGgjGyW7GgEvdCzfElATS8DnKN2LY3Fb0+kVp8mrKcEy7SpxUzmllclnYwDXBtkr2e5ad0sbG0JFZkH5A7OMzBZnJFqDAGCqLJLecP5251x+YhJnAK44NKMI3iGHZOZyk318nV6OjEsnPzVf3lSoQ7Ly34cEObjyLbXt9bVsR0fV1ahaW2MrVOeTNF2WniBnHus6IIq6cpL677z7ZmR6NuXtZs8YJQyw";
@@ -161,18 +197,7 @@ public class robot {
         m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public double checkAngle(double angle){
-        return angle % Math.PI;
-    }
-    public double angleWrap(double angle){
-        while(angle>Math.PI){
-            angle-=2*Math.PI;
-        }
-        while(angle<-Math.PI){
-            angle+=2*Math.PI;
-        }
-        return angle;
-    }
+
 
     public void turning(double radians){
         double angle = imu.getAngularOrientation().firstAngle;
@@ -224,7 +249,14 @@ public class robot {
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
-
+    public double getY(){
+        return location.y;
+    }
+    public double getX(){
+        return location.x;
+    }
+    public double getHeading(){
+        return location.heading;
+    }
 
 }
