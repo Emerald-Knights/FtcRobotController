@@ -235,7 +235,13 @@ public class drive extends LinearOpMode{
 
             if(aimLock){
                 double angleDiff= angleWrap(boWei.getHeading()- Math.atan2(goal.x-boWei.getY(), goal.y-boWei.getX()));
-                rx=angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
+                if(Math.abs(angleDiff)>.05){
+                    rx= angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
+
+                }
+                else{
+                    rx=0;
+                }
             }
 
             double lf;
@@ -282,6 +288,10 @@ public class drive extends LinearOpMode{
             telemetry.addData("LB", lb);
             telemetry.addData("RF", rf);
             telemetry.addData("RB", rb);
+
+            telemetry.addData("left", boWei.leftOdo.getCurrentPosition());
+            telemetry.addData("right", boWei.rightOdo.getCurrentPosition());
+            telemetry.addData("horizontal", boWei.horizontalOdo.getCurrentPosition());
             telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
             telemetry.addData("tick/s", boWei.launch.getVelocity());
             telemetry.addData("rate", rate);

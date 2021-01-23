@@ -16,9 +16,13 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.opencv.core.Point;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.firstinspires.ftc.teamcode.utilities.*;
 
@@ -44,6 +48,13 @@ public class robot {
     OpenCvCamera cam;
     ringPipeline pipeline;
 
+    List<CurvePoint> path = new ArrayList<>();
+
+    DcMotor[] driveTrain;
+    DcMotor[] odo;
+
+    private int currentPath=0;
+
     final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     final String LABEL_FIRST_ELEMENT = "Quad";
     final String LABEL_SECOND_ELEMENT = "Single";
@@ -55,12 +66,17 @@ public class robot {
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+
+        driveTrain = new DcMotor[]{leftFront, leftBack, rightBack, rightFront};
+
         leftLift=hardwareMap.get(Servo.class, "leftLift");
         rightLift=hardwareMap.get(Servo.class, "rightLift");
 
-        leftOdo= hardwareMap.get(DcMotor.class, "leftFront");
-        rightOdo = hardwareMap.get(DcMotor.class, "rightFront");
-        horizontalOdo = hardwareMap.get(DcMotor.class, "leftBack");
+        leftOdo= hardwareMap.get(DcMotor.class, "upwards");
+        rightOdo = hardwareMap.get(DcMotor.class, "leftBack");
+        horizontalOdo = hardwareMap.get(DcMotor.class, "leftFront");
+
+        odo = new DcMotor[]{leftOdo, rightOdo, horizontalOdo};
 
         upwards=hardwareMap.get(DcMotor.class, "upwards");
 
@@ -77,7 +93,17 @@ public class robot {
         imu.initialize(parameters);
         angle = imu.getAngularOrientation();
 
+        for(DcMotor pod: odo){
+            pod.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+        for(DcMotor pod: odo){
+            pod.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+
+
+
         location= new Position(0, 0, angle.firstAngle, leftOdo, rightOdo, horizontalOdo, imu, linearOpMode);
+        location.start();
     }
     public void initOpenCV(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -111,6 +137,17 @@ public class robot {
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
+
+    public double getY(){
+        return location.y;
+    }
+    public double getX(){
+        return location.x;
+    }
+    public double getHeading(){
+        return location.heading;
+    }
+
     public void move(int ticks, int direction) {
         DcMotor m= rightBack;
         m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -249,14 +286,150 @@ public class robot {
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public double getY(){
-        return location.y;
+    public void moveToPosition(double x, double y, double speed, double endAngle, double turnSpeed){
+        double xDis=x-getX(); //x distance to point global
+        double yDis=y-getY(); //y distance to point global
+
+        double totalDis=Math.hypot(xDis,yDis); //total distance to point global
+        double angleToPos=Math.atan2(yDis, xDis); //angle from robot to point
+        double relativeAngle=angleWrap(getHeading()-angleWrap(-angleToPos+Math.PI/2)); //angle robot is facing from where path ends
+
+        double relativeX=Math.cos(relativeAngle)*totalDis; //x velocity robot needs to get to locaction, robot point
+        double relativeY=Math.sin(relativeAngle)*totalDis; //y velocity robot needs to get to location, robot point
+
+        double xPower=relativeX/(Math.abs(relativeX)+Math.abs(relativeY))*speed; //setting speeds
+        double yPower=relativeY/(Math.abs(relativeX)+Math.abs(relativeY))*speed;
+
+        double turnAngle=getHeading()+endAngle; //amount u want to turn
+        double turnPower=turnAngle*turnSpeed;
+
+        for(int i=0; i<driveTrain.length; i++){
+            driveTrain[i].setPower(move(xPower,yPower,turnPower)[i]*.8);
+        }
+        //position.xPow=xPower;
+        //position.yPow=yPower;
+        //position.anglePow=turnPower;
+
     }
-    public double getX(){
-        return location.x;
+
+    public double[] move(double lx, double ly, double rx){
+        double lf = ly + rx + lx;
+        double lb = ly + rx - lx;
+        double rf = ly - rx - lx;
+        double rb = ly - rx + lx;
+
+
+        double max = Math.max(Math.max(Math.abs(lb), Math.abs(lf)), Math.max(Math.abs(rb), Math.abs(rf)));
+        double magnitude = Math.sqrt((lx * lx) + (ly * ly) + (rx * rx));
+        double ratio = magnitude / max;
+        if (max == 0) {
+            ratio=0;
+        }
+        double[] powers = {lf*ratio, lb*ratio, rb*ratio, rf*ratio};
+        return powers;
     }
-    public double getHeading(){
-        return location.heading;
+
+    public CurvePoint getFollowPointPath(List<CurvePoint> pathPoints, double xPosRobot, double yPosRobot, double followRadius){
+        /*
+        CurvePoint follow= new CurvePoint(pathPoints.get(0));
+        for(int i=0; i<pathPoints.size()-1; i++){
+            CurvePoint start=pathPoints.get(i);
+            CurvePoint end=pathPoints.get(i+1);
+
+            List<Point> intersections=proximityPathIntersects(new Point(xPosRobot, yPosRobot), followRadius, start.toPoint(), end.toPoint());
+            double closestAngle=Integer.MAX_VALUE;
+
+            for(Point intersect: intersections){
+                double angle=Math.atan2(intersect.y-this.position.y, intersect.x-this.position.x);
+                double deltaAngle=Math.abs(angleWrap(angle-position.heading));
+
+                //only works if there is one intersection in path
+                if(deltaAngle<closestAngle){
+                    closestAngle=deltaAngle;
+                    follow.setPoint(intersect);
+                }
+            }
+        }
+        return follow;
+
+         */
+        CurvePoint follow=new CurvePoint(pathPoints.get(currentPath));
+        int previousC=currentPath;
+        for(int i=currentPath; i<previousC+2 && i<pathPoints.size()-1; i++){
+            CurvePoint start=pathPoints.get(i);
+            CurvePoint end=pathPoints.get(i+1);
+
+            List<Point> intersections=proximityPathIntersects(new Point(xPosRobot, yPosRobot), followRadius, start.toPoint(), end.toPoint());
+            if(intersections.size()>0){
+                follow.setPoint(intersections.get(0));
+                follow.heading=end.heading;
+                currentPath=i;
+
+                //double closestAngle=Integer.MAX_VALUE;
+                for(Point intersect: intersections){
+                    if(Math.abs(distanceToPoint(intersect.x, intersect.y, end.x, end.y)) < Math.abs(distanceToPoint(follow.x, follow.y, end.x, end.y))){
+                        follow.setPoint(intersect);
+                    }
+                }
+            }
+
+            /*
+            for(Point intersect: intersections){
+                double angle=Math.atan2(intersect.y-this.position.y, intersect.x-this.position.x);
+                double deltaAngle=Math.abs(angleWrap(angle-position.heading));
+
+                //only works if there is one intersection in path
+                if(deltaAngle<closestAngle){
+                    closestAngle=deltaAngle;
+                    follow.setPoint(intersect);
+                    currentPath=i;
+                }
+            }
+            */
+        }
+        return follow;
+
     }
+
+    public void followCurve(List<CurvePoint> allPoints, double followDistance, double speed, double turnSpeed){
+        if(turnSpeed>speed){
+            speed=0;
+        }
+        CurvePoint follow=getFollowPointPath(allPoints, getX(), getY(), followDistance);
+        moveToPosition(follow.x, follow.y, speed, follow.heading, turnSpeed);
+    }
+
+    public void followCurveSync(List<CurvePoint> allPoints, double followDistance, double speed, double stopDis){
+        currentPath=0;
+        List<CurvePoint> allPointsF= new ArrayList<>(allPoints);
+        double deltY=allPoints.get(allPoints.size()-1).y-allPoints.get(allPoints.size()-2).y;
+        double deltX=allPoints.get(allPoints.size()-1).x-allPoints.get(allPoints.size()-2).x;
+
+        allPointsF.remove(allPointsF.size()-1);
+        allPointsF.add(new CurvePoint(allPoints.get(allPoints.size()-1).x+deltX, allPoints.get(allPoints.size()-1).y+deltY, allPoints.get(allPoints.size()-1).heading));
+        while(Math.abs( distanceToPoint(getX(), getY(),allPoints.get(allPoints.size()-1).x, allPoints.get(allPoints.size()-1).y) )>stopDis){
+            //ArrayList<CurvePoint> allPointsF=new ArrayList<CurvePoint>(allPoints);
+            /*
+            if(currentPath+1==allPointsF.size()-1){
+                double deltY=allPointsF.get(allPointsF.size()-1).y-allPointsF.get(allPointsF.size()-2).y;
+                double deltX=allPointsF.get(allPointsF.size()-1).x-allPointsF.get(allPointsF.size()-2).x;
+                System.out.println("delts"+deltX+" "+deltY);
+                allPointsF.get(allPointsF.size()-1).setPoint(new Point(allPointsF.get(allPointsF.size()-1).x+deltX, allPointsF.get(allPointsF.size()-1).y+deltY));;
+            }
+*/
+
+            followCurve(allPointsF, followDistance, speed-speed*(allPoints.get(currentPath+1).heading-getHeading())/5 , speed*(allPoints.get(currentPath+1).heading-getHeading())/5);
+            //System.out.println(allPointsF.get(allPointsF.size()-1).x + " "+ allPointsF.get(allPointsF.size()-1).y);
+
+            //allPointsF.clear();
+
+            try{
+                Thread.sleep(10);
+            }
+            catch(Exception e){}
+        }
+    }
+
+
 
 }
