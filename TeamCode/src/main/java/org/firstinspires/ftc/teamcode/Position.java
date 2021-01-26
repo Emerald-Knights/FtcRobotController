@@ -17,8 +17,8 @@ public class Position extends Thread{
     LinearOpMode opMode;
 
     //constants to convert encoders to distance moved
-    final double encoderToInch=1; //will need to tune
-    final double horizEncoderToInch=1; //will need to tune
+    final double encoderToInch=1777; //will need to tune
+    final double horizEncoderToInch=1777; //will need to tune
 
     //current encoder position/ angle position
     double positionLeft;
@@ -77,11 +77,11 @@ public class Position extends Thread{
             double changeBot=(changeLeft+changeRight)/2.0;
 
             //find the change in position of the robot in global coordinates (X,Y coordinate field)
-            double deltaX=encoderToInch* changeBot*Math.cos(heading+changeAngle/2.0) +horizEncoderToInch* changeHoriz*Math.cos(heading+changeAngle/2.0);
-            double deltaY=encoderToInch* changeBot*Math.sin(heading+changeAngle/2.0) -horizEncoderToInch* changeHoriz*Math.sin(heading+changeAngle/2.0);
+            double deltaX=changeBot*Math.cos(heading+changeAngle/2.0)/encoderToInch -changeHoriz*Math.sin(heading+changeAngle/2.0)/horizEncoderToInch;
+            double deltaY=changeBot*Math.sin(heading+changeAngle/2.0)/encoderToInch -changeHoriz*Math.cos(heading+changeAngle/2.0)/horizEncoderToInch;
 
             //add these changes to the xy etc
-            heading+=changeAngle;
+            heading=angleWrap(heading+changeAngle);
             x+=deltaX;
             y+=deltaY;
 

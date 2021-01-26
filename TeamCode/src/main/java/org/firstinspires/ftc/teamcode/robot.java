@@ -30,6 +30,8 @@ public class robot {
     public static double endX=0;
     public static double endY=0;
     public static double endAngle;
+    public static Point goal =new Point(0,0);
+    public static Point redGoal = new Point(75, -36);
 
     DcMotor rightFront, rightBack, leftFront, leftBack, spin;
     DcMotor leftOdo, rightOdo, horizontalOdo;
@@ -48,7 +50,7 @@ public class robot {
     OpenCvCamera cam;
     ringPipeline pipeline;
 
-    List<CurvePoint> path = new ArrayList<>();
+    //List<CurvePoint> path = new ArrayList<>();
 
     DcMotor[] driveTrain;
     DcMotor[] odo;
@@ -147,6 +149,9 @@ public class robot {
     public double getHeading(){
         return location.heading;
     }
+    public CurvePoint getPosition(){
+        return new CurvePoint(getX(), getY(), getHeading());
+    }
 
     public void move(int ticks, int direction) {
         DcMotor m= rightBack;
@@ -166,10 +171,6 @@ public class robot {
                 leftBack.setPower(direction * (0.8));
                 rightFront.setPower(direction * (0.8));
                 rightBack.setPower(direction * (0.8));
-//                try {
-//                    Thread.sleep(10);
-//                } catch (InterruptedException e) {
-//                }
             }
             else if (Math.abs(m.getCurrentPosition()) >= 2.0/3.0 * Math.abs(ticks)){
                 leftFront.setPower(direction * (Math.abs(Math.abs(ticks) - Math.abs(m.getCurrentPosition())/ Math.abs(ticks/3.0)) * 0.5 + 0.3));
@@ -239,7 +240,7 @@ public class robot {
     public void turning(double radians){
         double angle = imu.getAngularOrientation().firstAngle;
         int direction = 1;
-        while(Math.abs(angle) < Math.abs(radians)- 0.1) {
+        while(Math.abs(angle) < Math.abs(radians)- 0.1 && linearOpMode.opModeIsActive()) {
             angle = imu.getAngularOrientation().firstAngle;
             if (checkAngle(radians - angle) < 0){
                 direction = -1;
@@ -286,25 +287,31 @@ public class robot {
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void moveToPosition(double x, double y, double speed, double endAngle, double turnSpeed){
+    public void moveToPosition(double x, double y, double speed, double endAngle){
         double xDis=x-getX(); //x distance to point global
         double yDis=y-getY(); //y distance to point global
 
         double totalDis=Math.hypot(xDis,yDis); //total distance to point global
         double angleToPos=Math.atan2(yDis, xDis); //angle from robot to point
-        double relativeAngle=angleWrap(getHeading()-angleWrap(-angleToPos+Math.PI/2)); //angle robot is facing from where path ends
+        //double relativeAngle=angleWrap(getHeading()-angleWrap(-angleToPos+Math.PI/2)); //angle robot is facing from where path ends
+        double relativeAngle=angleWrap(angleToPos-getHeading()+Math.PI/2);
+        //double relativeAngle=angleWrap(getHeading()- angleToPos);
 
         double relativeX=Math.cos(relativeAngle)*totalDis; //x velocity robot needs to get to locaction, robot point
         double relativeY=Math.sin(relativeAngle)*totalDis; //y velocity robot needs to get to location, robot point
 
-        double xPower=relativeX/(Math.abs(relativeX)+Math.abs(relativeY))*speed; //setting speeds
-        double yPower=relativeY/(Math.abs(relativeX)+Math.abs(relativeY))*speed;
+        double xPower=Math.sqrt(2)*relativeX/(Math.abs(relativeX)+Math.abs(relativeY)); //setting speeds
+        double yPower=Math.sqrt(2)*relativeY/(Math.abs(relativeX)+Math.abs(relativeY));
 
-        double turnAngle=getHeading()+endAngle; //amount u want to turn
-        double turnPower=turnAngle*turnSpeed;
+        double turnAngle=angleWrap(endAngle-getHeading()); //amount u want to turn
+        //double turnPower=turnAngle*speed;
+        double turnPower=0;
+        if(turnAngle>.1){
+            turnPower= turnAngle/Math.abs(turnAngle)*( Math.abs(turnAngle)/2.0/Math.PI + .3);
+        }
 
         for(int i=0; i<driveTrain.length; i++){
-            driveTrain[i].setPower(move(xPower,yPower,turnPower)[i]*.8);
+            driveTrain[i].setPower(drive(xPower,yPower,turnPower)[i]*speed);
         }
         //position.xPow=xPower;
         //position.yPow=yPower;
@@ -312,7 +319,7 @@ public class robot {
 
     }
 
-    public double[] move(double lx, double ly, double rx){
+    public double[] drive(double lx, double ly, double rx){
         double lf = ly + rx + lx;
         double lb = ly + rx - lx;
         double rf = ly - rx - lx;
@@ -391,12 +398,10 @@ public class robot {
 
     }
 
-    public void followCurve(List<CurvePoint> allPoints, double followDistance, double speed, double turnSpeed){
-        if(turnSpeed>speed){
-            speed=0;
-        }
+    public void followCurve(List<CurvePoint> allPoints, double followDistance, double speed){
+
         CurvePoint follow=getFollowPointPath(allPoints, getX(), getY(), followDistance);
-        moveToPosition(follow.x, follow.y, speed, follow.heading, turnSpeed);
+        moveToPosition(follow.x, follow.y, speed, follow.heading);
     }
 
     public void followCurveSync(List<CurvePoint> allPoints, double followDistance, double speed, double stopDis){
@@ -407,7 +412,7 @@ public class robot {
 
         allPointsF.remove(allPointsF.size()-1);
         allPointsF.add(new CurvePoint(allPoints.get(allPoints.size()-1).x+deltX, allPoints.get(allPoints.size()-1).y+deltY, allPoints.get(allPoints.size()-1).heading));
-        while(Math.abs( distanceToPoint(getX(), getY(),allPoints.get(allPoints.size()-1).x, allPoints.get(allPoints.size()-1).y) )>stopDis){
+        while(Math.abs( distanceToPoint(getX(), getY(),allPoints.get(allPoints.size()-1).x, allPoints.get(allPoints.size()-1).y) )>stopDis && linearOpMode.opModeIsActive()){
             //ArrayList<CurvePoint> allPointsF=new ArrayList<CurvePoint>(allPoints);
             /*
             if(currentPath+1==allPointsF.size()-1){
@@ -418,18 +423,40 @@ public class robot {
             }
 */
 
-            followCurve(allPointsF, followDistance, speed-speed*(allPoints.get(currentPath+1).heading-getHeading())/5 , speed*(allPoints.get(currentPath+1).heading-getHeading())/5);
+            followCurve(allPointsF, followDistance, speed);
             //System.out.println(allPointsF.get(allPointsF.size()-1).x + " "+ allPointsF.get(allPointsF.size()-1).y);
 
             //allPointsF.clear();
 
+            linearOpMode.telemetry.addData("lf", leftFront.getPower());
+            linearOpMode.telemetry.addData("lb", leftBack.getPower());
+            linearOpMode.telemetry.addData("rb", rightBack.getPower());
+            linearOpMode.telemetry.addData("rf", rightFront.getPower());
+            linearOpMode.telemetry.addData("distance", distanceToPoint(getX(), getY(),allPoints.get(allPoints.size()-1).x, allPoints.get(allPoints.size()-1).y));
+            linearOpMode.telemetry.addData("Position", ("("+round1000(getX())+", "+round1000( getY() ) + ", " + round1000(getHeading())+")"));
+            linearOpMode.telemetry.update();
             try{
                 Thread.sleep(10);
             }
             catch(Exception e){}
         }
+
+        for(int i=0; i<driveTrain.length; i++){
+            driveTrain[i].setPower(0);
+        }
     }
+    public static double[] motorPower(double x, double y, double turn){
+        double[] powers=new double[4];
+        //double power=Math.hypot(x,y);
+        double angle=Math.atan2(y,x);
 
+        //fl, bl, br, fr
+        powers[0]=-1* Math.sin(angle+Math.PI/4)+turn;
+        powers[1]=-1*Math.cos(angle+Math.PI/4)+turn;
+        powers[2]=-1*Math.sin(angle+Math.PI/4)-turn;
+        powers[3]=-1*Math.cos(angle+Math.PI/4)-turn;
 
+        return powers;
+    }
 
 }

@@ -18,13 +18,14 @@ import org.opencv.core.Point;
 @TeleOp(name="drive", group="f")
 public class drive extends LinearOpMode{
     robot boWei = new robot();
-    Point goal =new Point(0,0);
+
     @Override
     public void runOpMode(){
         boWei.init(hardwareMap, this);
         //float current = 0;
         //float currentVex = 0;
-        boWei.location.setPosition(robot.endX, robot.endY, robot.endAngle);
+        //boWei.location.setPosition(robot.endX, robot.endY, robot.endAngle);
+        boWei.location.setPosition(-65, -18, Math.PI);
 
         waitForStart();
         boolean isMoving = false;
@@ -40,7 +41,7 @@ public class drive extends LinearOpMode{
         boolean lbumpPressed=false;
         boolean yIsPressed=false;
 
-        boolean distanceBasedShoot=false;
+        boolean distanceBasedShoot=true;
         double rate=1;
 
         boolean bIsPressed=false;
@@ -168,7 +169,9 @@ public class drive extends LinearOpMode{
 
             if(isMoving){
                 if(distanceBasedShoot){
-                    rate=.0136904762 * (Math.hypot(goal.x-boWei.getX(), goal.y-boWei.getY()))+3.542857143;
+                    //rate=.0136904762 * (Math.hypot(goal.x-boWei.getX(), goal.y-boWei.getY()))+3.542857143;
+                    rate=.0136904762 * (Math.hypot(robot.redGoal.x-boWei.getX(), robot.redGoal.y-boWei.getY()))+3.542857143;
+
                 }
                 boWei.launch.setVelocity(rate, AngleUnit.RADIANS);
             }
@@ -234,7 +237,7 @@ public class drive extends LinearOpMode{
             }
 
             if(aimLock){
-                double angleDiff= angleWrap(boWei.getHeading()- Math.atan2(goal.x-boWei.getY(), goal.y-boWei.getX()));
+                double angleDiff= angleWrap(boWei.getHeading() +Math.PI - Math.atan2(robot.redGoal.y-boWei.getY(), robot.redGoal.x-boWei.getX()));
                 if(Math.abs(angleDiff)>.05){
                     rx= angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
 
@@ -277,7 +280,7 @@ public class drive extends LinearOpMode{
 
                 double max = Math.max(Math.max(Math.abs(lb), Math.abs(lf)), Math.max(Math.abs(rb), Math.abs(rf)));
                 double magnitude = Math.sqrt((lx * lx) + (ly * ly) + (rx * rx));
-                ratio = magnitude / max;
+                ratio = .8*magnitude / max;
                 if (max == 0) {
                     ratio=0;
                 }
@@ -292,6 +295,9 @@ public class drive extends LinearOpMode{
             telemetry.addData("left", boWei.leftOdo.getCurrentPosition());
             telemetry.addData("right", boWei.rightOdo.getCurrentPosition());
             telemetry.addData("horizontal", boWei.horizontalOdo.getCurrentPosition());
+
+            telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
+
             telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
             telemetry.addData("tick/s", boWei.launch.getVelocity());
             telemetry.addData("rate", rate);
