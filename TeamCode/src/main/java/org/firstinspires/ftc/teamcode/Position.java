@@ -17,8 +17,10 @@ public class Position extends Thread{
     LinearOpMode opMode;
 
     //constants to convert encoders to distance moved
-    final double encoderToInch=1777; //will need to tune
-    final double horizEncoderToInch=1777; //will need to tune
+    final double encoderToInch=1682; //will need to tune
+    final double horizEncoderToInch=1560; //will need to tune
+    final double horizEncoderToRadian= 2317;
+    final double forwardEncoderToRadian = 1600;
 
     //current encoder position/ angle position
     double positionLeft;
@@ -46,9 +48,9 @@ public class Position extends Thread{
         this.opMode=opMode;
 
         //set an initial position
-        positionLeft=this.leftOdo.getCurrentPosition();
+        positionLeft=-this.leftOdo.getCurrentPosition();
         positionRight=this.rightOdo.getCurrentPosition();
-        positionHoriz=this.horizontalOdo.getCurrentPosition();
+        positionHoriz=-this.horizontalOdo.getCurrentPosition();
         angle=imu.getAngularOrientation().firstAngle;
     }
 
@@ -62,23 +64,27 @@ public class Position extends Thread{
             previousAngle=angle;
 
             //get current positions
-            positionLeft=this.leftOdo.getCurrentPosition();
+            positionLeft=-this.leftOdo.getCurrentPosition();
             positionRight=this.rightOdo.getCurrentPosition();
-            positionHoriz=this.horizontalOdo.getCurrentPosition();
+            positionHoriz=-this.horizontalOdo.getCurrentPosition();
             angle=imu.getAngularOrientation().firstAngle;
 
             //find the change in positions
-            double changeLeft=positionLeft-previousLeft;
-            double changeRight=positionRight-previousRight;
-            double changeHoriz=positionHoriz-previousHoriz;
             double changeAngle=angleWrap(angle-previousAngle);
+            double changeLeft= positionLeft-previousLeft +  forwardEncoderToRadian * changeAngle;
+            double changeRight=positionRight-previousRight - forwardEncoderToRadian * -changeAngle;
+            double changeHoriz=positionHoriz-previousHoriz -horizEncoderToRadian * changeAngle;
+
 
             //the amount the bot moved is the average of the left and right
             double changeBot=(changeLeft+changeRight)/2.0;
 
+            double headingCos=Math.cos(heading+changeAngle/2.0); //cosine and sine are computationally expensive operations
+            double headingSin=Math.sin(heading+changeAngle/2.0);
+
             //find the change in position of the robot in global coordinates (X,Y coordinate field)
-            double deltaX=changeBot*Math.cos(heading+changeAngle/2.0)/encoderToInch -changeHoriz*Math.sin(heading+changeAngle/2.0)/horizEncoderToInch;
-            double deltaY=changeBot*Math.sin(heading+changeAngle/2.0)/encoderToInch -changeHoriz*Math.cos(heading+changeAngle/2.0)/horizEncoderToInch;
+            double deltaX=changeBot*headingCos/encoderToInch +changeHoriz*headingSin/horizEncoderToInch;
+            double deltaY=changeBot*headingSin/encoderToInch -changeHoriz*headingCos/horizEncoderToInch;
 
             //add these changes to the xy etc
             heading=angleWrap(heading+changeAngle);

@@ -74,8 +74,8 @@ public class robot {
         leftLift=hardwareMap.get(Servo.class, "leftLift");
         rightLift=hardwareMap.get(Servo.class, "rightLift");
 
-        leftOdo= hardwareMap.get(DcMotor.class, "upwards");
-        rightOdo = hardwareMap.get(DcMotor.class, "leftBack");
+        leftOdo= hardwareMap.get(DcMotor.class, "spin");
+        rightOdo = hardwareMap.get(DcMotor.class, "rightBack");
         horizontalOdo = hardwareMap.get(DcMotor.class, "leftFront");
 
         odo = new DcMotor[]{leftOdo, rightOdo, horizontalOdo};

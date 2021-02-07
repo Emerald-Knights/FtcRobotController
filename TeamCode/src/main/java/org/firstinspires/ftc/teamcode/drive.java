@@ -25,7 +25,7 @@ public class drive extends LinearOpMode{
         //float current = 0;
         //float currentVex = 0;
         //boWei.location.setPosition(robot.endX, robot.endY, robot.endAngle);
-        boWei.location.setPosition(-65, -18, Math.PI);
+        boWei.location.setPosition(0, 0, 0);
 
         waitForStart();
         boolean isMoving = false;
@@ -44,6 +44,7 @@ public class drive extends LinearOpMode{
         boolean distanceBasedShoot=true;
         double rate=1;
 
+        double oldAngle = 0;
         boolean bIsPressed=false;
         boolean collecting=false;
 
@@ -286,15 +287,17 @@ public class drive extends LinearOpMode{
                 }
             }
 
-
+            double angle = oldAngle - boWei.getHeading();
+            oldAngle = boWei.getHeading();
             telemetry.addData("LF", lf);
             telemetry.addData("LB", lb);
             telemetry.addData("RF", rf);
             telemetry.addData("RB", rb);
 
-            telemetry.addData("left", boWei.leftOdo.getCurrentPosition());
+            telemetry.addData("left", -boWei.leftOdo.getCurrentPosition());
             telemetry.addData("right", boWei.rightOdo.getCurrentPosition());
             telemetry.addData("horizontal", boWei.horizontalOdo.getCurrentPosition());
+            telemetry.addData("Diff:", (boWei.location.positionLeft + boWei.location.forwardEncoderToRadian *  angle) + (boWei.location.positionRight - boWei.location.forwardEncoderToRadian * -angle));
 
             telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
 
