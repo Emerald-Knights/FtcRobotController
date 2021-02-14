@@ -306,8 +306,8 @@ public class robot {
         double turnAngle=angleWrap(endAngle-getHeading()); //amount u want to turn
         //double turnPower=turnAngle*speed;
         double turnPower=0;
-        if(turnAngle>.1){
-            turnPower= turnAngle/Math.abs(turnAngle)*( Math.abs(turnAngle)/2.0/Math.PI + .3);
+        if(Math.abs(turnAngle)>.01){
+            turnPower= -turnAngle/Math.abs(turnAngle)*( Math.abs(turnAngle)/Math.PI/2.0+ .3);
         }
 
         for(int i=0; i<driveTrain.length; i++){
