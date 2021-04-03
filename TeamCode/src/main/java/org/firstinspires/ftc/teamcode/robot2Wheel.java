@@ -26,14 +26,14 @@ import java.util.List;
 
 import static org.firstinspires.ftc.teamcode.utilities.*;
 
-public class robot {
+public class robot2Wheel {
     public static double endX=0;
     public static double endY=0;
     public static double endAngle;
     public static Point goal =new Point(0,0);
     public static Point redGoal = new Point(75, -36);
 
-    DcMotor rightFront, rightBack, leftFront, leftBack, spin;
+    DcMotor rightBack, leftBack, spin;
     DcMotor leftOdo, rightOdo, horizontalOdo;
     DcMotorEx launch;
     BNO055IMU imu;
@@ -64,12 +64,12 @@ public class robot {
     public void init (HardwareMap hardwareMap, LinearOpMode linearOpMode){
         launch = (DcMotorEx) hardwareMap.get(DcMotor.class, "launch");
         spin = hardwareMap.get(DcMotor.class,"spin");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        //rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        //leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
 
-        driveTrain = new DcMotor[]{leftFront, leftBack, rightBack, rightFront};
+        driveTrain = new DcMotor[]{leftBack, rightBack};
 
         leftLift=hardwareMap.get(Servo.class, "leftLift");
         rightLift=hardwareMap.get(Servo.class, "rightLift");
@@ -83,7 +83,7 @@ public class robot {
         upwards=hardwareMap.get(DcMotor.class, "upwards");
 
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightFront.setDirection((DcMotorSimple.Direction.REVERSE));
+        //rightFront.setDirection((DcMotorSimple.Direction.REVERSE));
         //leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightLift.setDirection(Servo.Direction.REVERSE);
         this.linearOpMode = linearOpMode;
@@ -213,36 +213,36 @@ public class robot {
         m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (Math.abs(m.getCurrentPosition()) < Math.abs(ticks) && linearOpMode.opModeIsActive()) {
             if (Math.abs(m.getCurrentPosition()) <= Math.abs(ticks/3.0)) {
-                leftFront.setPower(direction *((Math.abs(m.getCurrentPosition())/ Math.abs(ticks/3.0)) * 0.5 + 0.3));
+                //leftFront.setPower(direction *((Math.abs(m.getCurrentPosition())/ Math.abs(ticks/3.0)) * 0.5 + 0.3));
                 leftBack.setPower(direction * ((Math.abs(m.getCurrentPosition())/ Math.abs(ticks/3.0)) * 0.5 + 0.3));
-                rightFront.setPower(direction * ((Math.abs(m.getCurrentPosition())/ Math.abs(ticks/3.0)) * 0.5 + 0.3));
+                //rightFront.setPower(direction * ((Math.abs(m.getCurrentPosition())/ Math.abs(ticks/3.0)) * 0.5 + 0.3));
                 rightBack.setPower(direction * ((Math.abs(m.getCurrentPosition())/ Math.abs(ticks/3.0)) * 0.5 + 0.3));
                 //telemetry.addData("rightFront:" + rightFront.getCurrentPosition());
                 //telemetry.addData("rightFront pow: "+ rightFront.getPower());
 
             } else if (Math.abs(m.getCurrentPosition() )< 2.0/3 * Math.abs(ticks) && Math.abs(ticks) < Math.abs(m.getCurrentPosition())) {
-                leftFront.setPower(direction * (0.8));
+                //leftFront.setPower(direction * (0.8));
                 leftBack.setPower(direction * (0.8));
-                rightFront.setPower(direction * (0.8));
+                //rightFront.setPower(direction * (0.8));
                 rightBack.setPower(direction * (0.8));
             }
             else if (Math.abs(m.getCurrentPosition()) >= 2.0/3.0 * Math.abs(ticks)){
-                leftFront.setPower(direction * (Math.abs(Math.abs(ticks) - Math.abs(m.getCurrentPosition())/ Math.abs(ticks/3.0)) * 0.5 + 0.3));
+                //leftFront.setPower(direction * (Math.abs(Math.abs(ticks) - Math.abs(m.getCurrentPosition())/ Math.abs(ticks/3.0)) * 0.5 + 0.3));
                 leftBack.setPower(direction * (Math.abs( ( Math.abs(ticks) - Math.abs(m.getCurrentPosition() ) ) / Math.abs(ticks/3.0) ) * 0.5 + 0.3));
-                rightFront.setPower(direction * (Math.abs((Math.abs(ticks) - Math.abs(m.getCurrentPosition()))/ Math.abs((ticks/3.0))) * 0.5 + 0.3));
+                //rightFront.setPower(direction * (Math.abs((Math.abs(ticks) - Math.abs(m.getCurrentPosition()))/ Math.abs((ticks/3.0))) * 0.5 + 0.3));
                 rightBack.setPower(direction * (Math.abs((Math.abs(ticks) - Math.abs(m.getCurrentPosition()))/ Math.abs((ticks/3.0))) * 0.5 + 0.3));
             }
-            linearOpMode.telemetry.addData("rightFront:",  rightFront.getPower());
-            linearOpMode.telemetry.addData("leftFront:",  leftFront.getPower());
+            //linearOpMode.telemetry.addData("rightFront:",  rightFront.getPower());
+            //linearOpMode.telemetry.addData("leftFront:",  leftFront.getPower());
             linearOpMode.telemetry.addData("pos", m.getCurrentPosition());
             linearOpMode.telemetry.addData("ticks",  ticks);
             linearOpMode.telemetry.addData("calculation", direction * (((Math.abs(ticks) - Math.abs(m.getCurrentPosition()))/ Math.abs((ticks/3.0))) * 0.5));
             linearOpMode.telemetry.update();
 
         }
-        leftFront.setPower(0);
+        //leftFront.setPower(0);
         leftBack.setPower(0);
-        rightFront.setPower(0);
+        //rightFront.setPower(0);
         rightBack.setPower(0);
         m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -252,9 +252,9 @@ public class robot {
         DcMotor m=rightBack;
         while (Math.abs(m.getCurrentPosition()) < ticks && linearOpMode.opModeIsActive()) {
             if (Math.abs(m.getCurrentPosition()) <= ticks/3.0) {
-                leftFront.setPower(-direction *((Math.abs(m.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
+                //leftFront.setPower(-direction *((Math.abs(m.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
                 leftBack.setPower(direction * ((Math.abs(m.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
-                rightFront.setPower(direction * ((Math.abs(m.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
+                //rightFront.setPower(direction * ((Math.abs(m.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
                 rightBack.setPower(-direction * ((Math.abs(m.getCurrentPosition())/ (ticks/3.0)) * 0.8 + 0.1));
                 //linearOpMode.telemetry.addData("m:", m.getCurrentPosition());
                 //telemetry.update();
@@ -263,9 +263,9 @@ public class robot {
                 //} catch (InterruptedException e) {
                 //}
             } else if (Math.abs(m.getCurrentPosition() )< 2.0/3 * ticks && ticks/3.0 < Math.abs(m.getCurrentPosition())) {
-                leftFront.setPower(-direction * (0.8));
+                //leftFront.setPower(-direction * (0.8));
                 leftBack.setPower(direction * (0.8));
-                rightFront.setPower(direction * (0.8));
+                //rightFront.setPower(direction * (0.8));
                 rightBack.setPower(-direction * (0.8));
 //                try {
 //                    Thread.sleep(10);
@@ -273,18 +273,18 @@ public class robot {
 //                }
             }
             else if (Math.abs(m.getCurrentPosition()) >= 2.0/3.0 * ticks){
-                leftFront.setPower(-direction * (((ticks - Math.abs(m.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
+                //leftFront.setPower(-direction * (((ticks - Math.abs(m.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
                 leftBack.setPower(direction * (((ticks - Math.abs(m.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
-                rightFront.setPower(direction * (((ticks - Math.abs(m.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
+                //rightFront.setPower(direction * (((ticks - Math.abs(m.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
                 rightBack.setPower(-direction * (((ticks - Math.abs(m.getCurrentPosition()))/ (ticks/3.0)) * 0.8 + 0.1));
             }
             linearOpMode.telemetry.addData("leftFront:", Math.abs(m.getCurrentPosition()));
             linearOpMode.telemetry.update();
 
         }
-        leftFront.setPower(0);
+        //leftFront.setPower(0);
         leftBack.setPower(0);
-        rightFront.setPower(0);
+        //rightFront.setPower(0);
         rightBack.setPower(0);
         m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -303,9 +303,9 @@ public class robot {
                 direction = 1;
             }
             if (angle <= radians/3) {
-                leftFront.setPower(direction * (-( Math.abs(angle / (radians/3.0)) * 0.8 + 0.1)));
+                //leftFront.setPower(direction * (-( Math.abs(angle / (radians/3.0)) * 0.8 + 0.1)));
                 leftBack.setPower (direction * (-( Math.abs(angle/ (radians/3.0)) * 0.8 + 0.1)));
-                rightFront.setPower(direction * ( Math.abs(angle/ (radians/3.0)) * 0.8 + 0.1));
+                //rightFront.setPower(direction * ( Math.abs(angle/ (radians/3.0)) * 0.8 + 0.1));
                 rightBack.setPower(direction * ( Math.abs(angle/ (radians/3.0)) * 0.8 + 0.1));
                 //telemetry.addData("Angle:" + (angle / (radians/3)));
 
@@ -315,9 +315,9 @@ public class robot {
                 //}
             }
             else if (angle < 2.0/3 *radians && radians/3.0 < angle) {
-                leftFront.setPower(direction * (-0.8));
+                //leftFront.setPower(direction * (-0.8));
                 leftBack.setPower(direction * (-0.8));
-                rightFront.setPower(direction * (0.8));
+                //rightFront.setPower(direction * (0.8));
                 rightBack.setPower(direction * (0.8));
 //                try {
 //                    Thread.sleep(10);
@@ -325,23 +325,28 @@ public class robot {
 //                }
             }
             else if (angle >= 2.0/3.0 * radians){
-                leftFront.setPower(direction * (-((Math.abs( checkAngle(radians - (angle) / (radians/3.0)))) * 0.8 + 0.1)));
+                //leftFront.setPower(direction * (-((Math.abs( checkAngle(radians - (angle) / (radians/3.0)))) * 0.8 + 0.1)));
                 leftBack.setPower(direction * (-((Math.abs (checkAngle(radians - (angle)/ (radians/3.0)))) * 0.8 + 0.1)));
-                rightFront.setPower(direction * ((Math.abs(checkAngle(radians - (angle)/ (radians/3.0)))) * 0.8 + 0.1));
+                //rightFront.setPower(direction * ((Math.abs(checkAngle(radians - (angle)/ (radians/3.0)))) * 0.8 + 0.1));
                 rightBack.setPower(direction * ((Math.abs(checkAngle(radians - (angle)/ (radians/3.0)))) * 0.8 + 0.1));
             }
             //telemetry.addData("Angle:" + angle);
             //telemetry.addData("Left:" + leftFront.getPower());
             //telemetry.update();
         }
-        leftFront.setPower(0);
+        //leftFront.setPower(0);
         leftBack.setPower(0);
-        rightFront.setPower(0);
+        //rightFront.setPower(0);
         rightBack.setPower(0);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void moveToPosition(double x, double y, double speed, double endAngle){
+
+    /** Pure pursuit
+     *
+     *
+     */
+    public void moveToPosition(double x, double y, double speed, double endAngle, double follow){
         double xDis=x-getX(); //x distance to point global
         double yDis=y-getY(); //y distance to point global
 
@@ -354,6 +359,8 @@ public class robot {
         double relativeX=Math.cos(relativeAngle)*totalDis; //x velocity robot needs to get to locaction, robot point
         double relativeY=Math.sin(relativeAngle)*totalDis; //y velocity robot needs to get to location, robot point
 
+        double curvature = 2.0*relativeX/Math.pow(follow, 2);
+
         double xPower=Math.sqrt(2)*relativeX/(Math.abs(relativeX)+Math.abs(relativeY)); //setting speeds
         double yPower=Math.sqrt(2)*relativeY/(Math.abs(relativeX)+Math.abs(relativeY));
 
@@ -363,9 +370,9 @@ public class robot {
         if(Math.abs(turnAngle)>.01){
             turnPower= -turnAngle/Math.abs(turnAngle)*( Math.abs(turnAngle)/Math.PI/2.0+ .3);
         }
-
+        turnPower+=curvature;
         for(int i=0; i<driveTrain.length; i++){
-            driveTrain[i].setPower(drive(xPower,yPower,turnPower)[i]*speed);
+            driveTrain[i].setPower(drive(yPower,turnPower)[i]*speed);
         }
         //position.xPow=xPower;
         //position.yPow=yPower;
@@ -373,20 +380,18 @@ public class robot {
 
     }
 
-    public double[] drive(double lx, double ly, double rx){
-        double lf = ly + rx + lx;
-        double lb = ly + rx - lx;
-        double rf = ly - rx - lx;
-        double rb = ly - rx + lx;
+    public double[] drive(double ly, double rx){
+        double lb = ly + rx;
+        double rb = ly - rx;
 
 
-        double max = Math.max(Math.max(Math.abs(lb), Math.abs(lf)), Math.max(Math.abs(rb), Math.abs(rf)));
-        double magnitude = Math.sqrt((lx * lx) + (ly * ly) + (rx * rx));
+        double max = Math.max(Math.abs(lb), Math.abs(rb));
+        double magnitude = Math.sqrt((ly * ly) + (rx * rx));
         double ratio = magnitude / max;
         if (max == 0) {
             ratio=0;
         }
-        double[] powers = {lf*ratio, lb*ratio, rb*ratio, rf*ratio};
+        double[] powers = {lb*ratio, rb*ratio};
         return powers;
     }
 
@@ -420,7 +425,7 @@ public class robot {
     public void followCurve(List<CurvePoint> allPoints, double followDistance, double speed){
 
         CurvePoint follow=getFollowPointPath(allPoints, getX(), getY(), followDistance);
-        moveToPosition(follow.x, follow.y, speed, follow.heading);
+        moveToPosition(follow.x, follow.y, speed, follow.heading, followDistance);
     }
 
     public void followCurveSync(List<CurvePoint> allPoints, double followDistance, double speed, double stopDis){
@@ -432,17 +437,17 @@ public class robot {
         allPointsF.remove(allPointsF.size()-1);
         allPointsF.add(new CurvePoint(allPoints.get(allPoints.size()-1).x+deltX, allPoints.get(allPoints.size()-1).y+deltY, allPoints.get(allPoints.size()-1).heading));
         while(Math.abs( distanceToPoint(getX(), getY(),allPoints.get(allPoints.size()-1).x, allPoints.get(allPoints.size()-1).y) )>stopDis && linearOpMode.opModeIsActive()){
-            
+
 
             followCurve(allPointsF, followDistance, speed);
             //System.out.println(allPointsF.get(allPointsF.size()-1).x + " "+ allPointsF.get(allPointsF.size()-1).y);
 
             //allPointsF.clear();
 
-            linearOpMode.telemetry.addData("lf", leftFront.getPower());
+            //linearOpMode.telemetry.addData("lf", leftFront.getPower());
             linearOpMode.telemetry.addData("lb", leftBack.getPower());
             linearOpMode.telemetry.addData("rb", rightBack.getPower());
-            linearOpMode.telemetry.addData("rf", rightFront.getPower());
+            //linearOpMode.telemetry.addData("rf", rightFront.getPower());
             linearOpMode.telemetry.addData("distance", distanceToPoint(getX(), getY(),allPoints.get(allPoints.size()-1).x, allPoints.get(allPoints.size()-1).y));
             linearOpMode.telemetry.addData("Position", ("("+round1000(getX())+", "+round1000( getY() ) + ", " + round1000(getHeading())+")"));
             linearOpMode.telemetry.update();

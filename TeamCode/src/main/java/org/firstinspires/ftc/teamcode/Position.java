@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import static org.firstinspires.ftc.teamcode.utilities.*;
+@Config
 public class Position extends Thread{
     //position stuff
     double x,y,heading;
@@ -17,14 +19,14 @@ public class Position extends Thread{
     LinearOpMode opMode;
 
     //constants to convert encoders to distance moved
-    final double encoderToInch=1682; //will need to tune
-    final double horizEncoderToInch=1560; //will need to tune
-    final double horizEncoderToRadian= 2317;
-    final double forwardEncoderToRadian = 1600;
-
+    private static double encoderToInch=1682; //will need to tune 1682
+    private static double horizEncoderToInch=1560; //will need to tune
+    final double horizEncoderToRadian= 1250;
+    final double forwardEncoderToRadian = 3019;
     //current encoder position/ angle position
     double positionLeft;
     double positionRight;
+
     double positionHoriz;
     double angle;
 
@@ -71,7 +73,7 @@ public class Position extends Thread{
 
             //find the change in positions
             double changeAngle=angleWrap(angle-previousAngle);
-            double changeLeft= positionLeft-previousLeft +  forwardEncoderToRadian * changeAngle;
+            double changeLeft= positionLeft-previousLeft +  forwardEncoderToRadian * changeAngle ;
             double changeRight=positionRight-previousRight - forwardEncoderToRadian * -changeAngle;
             double changeHoriz=positionHoriz-previousHoriz -horizEncoderToRadian * changeAngle;
 
@@ -92,7 +94,7 @@ public class Position extends Thread{
             y+=deltaY;
 
             try{
-                Thread.sleep(10);
+                Thread.sleep(1);
             }
             catch (InterruptedException e){}
 

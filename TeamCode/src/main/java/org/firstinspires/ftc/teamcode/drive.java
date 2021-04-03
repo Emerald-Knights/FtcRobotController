@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -41,7 +43,7 @@ public class drive extends LinearOpMode{
         boolean lbumpPressed=false;
         boolean yIsPressed=false;
 
-        boolean distanceBasedShoot=true;
+        boolean distanceBasedShoot=false;
         double rate=1;
 
         double oldAngle = 0;
@@ -54,6 +56,8 @@ public class drive extends LinearOpMode{
         boolean prevLStick=false;
 
         boolean aimLock=false;
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
 
         while(opModeIsActive()){
             double lx=gamepad1.left_stick_x;
@@ -136,10 +140,10 @@ public class drive extends LinearOpMode{
 
             //collection
             if (gamepad2.left_bumper){
-                boWei.spin.setPower(0.8);
+                boWei.reverseCollect();
             }
             else if (gamepad2.right_bumper){
-                boWei.spin.setPower(-0.8);
+                boWei.collect();
             }
             else {
                 boWei.spin.setPower(0);
@@ -171,7 +175,7 @@ public class drive extends LinearOpMode{
             if(isMoving){
                 if(distanceBasedShoot){
                     //rate=.0136904762 * (Math.hypot(goal.x-boWei.getX(), goal.y-boWei.getY()))+3.542857143;
-                    rate=.0136904762 * (Math.hypot(robot.redGoal.x-boWei.getX(), robot.redGoal.y-boWei.getY()))+3.542857143;
+                    rate=boWei.getRate();
 
                 }
                 boWei.launch.setVelocity(rate, AngleUnit.RADIANS);
@@ -187,7 +191,7 @@ public class drive extends LinearOpMode{
                     collecting=false;
                 }
                 else if(!collecting){
-                    boWei.upwards.setPower(-0.8);
+                    boWei.upward();
                     collecting=true;
                 }
                 bIsPressed=true;
@@ -238,8 +242,9 @@ public class drive extends LinearOpMode{
             }
 
             if(aimLock){
-                double angleDiff= angleWrap(boWei.getHeading() +Math.PI - Math.atan2(robot.redGoal.y-boWei.getY(), robot.redGoal.x-boWei.getX()));
+                double angleDiff= boWei.getAngleDiff();
                 if(Math.abs(angleDiff)>.05){
+                    int d=0;
                     rx= angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
 
                 }
@@ -289,10 +294,12 @@ public class drive extends LinearOpMode{
 
             double angle = oldAngle - boWei.getHeading();
             oldAngle = boWei.getHeading();
-            telemetry.addData("LF", lf);
-            telemetry.addData("LB", lb);
-            telemetry.addData("RF", rf);
-            telemetry.addData("RB", rb);
+
+
+            //telemetry.addData("LF", lf);
+            //telemetry.addData("LB", lb);
+            //telemetry.addData("RF", rf);
+            //telemetry.addData("RB", rb);
 
             telemetry.addData("left", -boWei.leftOdo.getCurrentPosition());
             telemetry.addData("right", boWei.rightOdo.getCurrentPosition());
@@ -301,11 +308,21 @@ public class drive extends LinearOpMode{
 
             telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
 
-            telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
+            /*           telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
             telemetry.addData("tick/s", boWei.launch.getVelocity());
             telemetry.addData("rate", rate);
             telemetry.addData("Field oriented: ", fieldOriented);
+
+
+             */
             telemetry.update();
+
+
+            TelemetryPacket packet = new TelemetryPacket();
+            packet.fieldOverlay().setFill("Green").setStrokeWidth(1).setStroke("goldenrod").fillCircle(boWei.getX(), boWei.getY(), 5);
+            dashboard.sendTelemetryPacket(packet);
+
+
 
             boWei.leftFront.setPower(lf * ratio * toggle);
             boWei.leftBack.setPower(lb * ratio * toggle);
