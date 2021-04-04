@@ -19,7 +19,7 @@ import org.opencv.core.Point;
 
 @TeleOp(name="drive", group="f")
 public class drive extends LinearOpMode{
-    robot boWei = new robot();
+    robot2Wheel boWei = new robot2Wheel();
 
     @Override
     public void runOpMode(){
@@ -57,7 +57,7 @@ public class drive extends LinearOpMode{
 
         boolean aimLock=false;
 
-        FtcDashboard dashboard = FtcDashboard.getInstance();
+        //FtcDashboard dashboard = FtcDashboard.getInstance();
 
         while(opModeIsActive()){
             double lx=gamepad1.left_stick_x;
@@ -301,9 +301,9 @@ public class drive extends LinearOpMode{
             //telemetry.addData("RF", rf);
             //telemetry.addData("RB", rb);
 
-            telemetry.addData("left", -boWei.leftOdo.getCurrentPosition());
-            telemetry.addData("right", boWei.rightOdo.getCurrentPosition());
-            telemetry.addData("horizontal", boWei.horizontalOdo.getCurrentPosition());
+//            telemetry.addData("left", -boWei.leftOdo.getCurrentPosition());
+//            telemetry.addData("right", boWei.rightOdo.getCurrentPosition());
+//            telemetry.addData("horizontal", boWei.horizontalOdo.getCurrentPosition());
             telemetry.addData("Diff:", (boWei.location.positionLeft + boWei.location.forwardEncoderToRadian *  angle) + (boWei.location.positionRight - boWei.location.forwardEncoderToRadian * -angle));
 
             telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
@@ -320,14 +320,14 @@ public class drive extends LinearOpMode{
 
             TelemetryPacket packet = new TelemetryPacket();
             packet.fieldOverlay().setFill("Green").setStrokeWidth(1).setStroke("goldenrod").fillCircle(boWei.getX(), boWei.getY(), 5);
-            dashboard.sendTelemetryPacket(packet);
+            //dashboard.sendTelemetryPacket(packet);
 
 
 
-            boWei.leftFront.setPower(lf * ratio * toggle);
-            boWei.leftBack.setPower(lb * ratio * toggle);
-            boWei.rightFront.setPower(rf * ratio * toggle);
-            boWei.rightBack.setPower(rb * ratio * toggle);
+//            boWei.leftFront.setPower(lf * ratio * toggle);
+//            boWei.leftBack.setPower(lb * ratio * toggle);
+//            boWei.rightFront.setPower(rf * ratio * toggle);
+//            boWei.rightBack.setPower(rb * ratio * toggle);
 
             prevLStick=lsb;
             prevRStick=rsb;
