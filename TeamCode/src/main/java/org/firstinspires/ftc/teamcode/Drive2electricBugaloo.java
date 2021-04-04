@@ -32,10 +32,18 @@ public class Drive2electricBugaloo extends LinearOpMode{
 		launch = (DcMotorEx) hardwareMap.get(DcMotor.class, "launch");
 		spin = hardwareMap.get(DcMotorEx.class,"spin");
 		upwards=hardwareMap.get(DcMotor.class, "upwards");
+		spin.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+		spin.setPower(0);
+		spin.setDirection(DcMotorSimple.Direction.FORWARD);
+		spin.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		upwards.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		upwards.setPower(0);
-		upwards.setDirection(DcMotorSimple.Direction.FORWARD);
-		upwards.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		upwards.setDirection(DcMotorSimple.Direction.REVERSE);
+		launch.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		launch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+		launch.setPower(0);
+		launch.setDirection(DcMotorSimple.Direction.FORWARD);
+		launch.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		waitForStart();
 //		boolean isMoving = false;
 //		boolean aIsPressed = false;
@@ -67,9 +75,9 @@ public class Drive2electricBugaloo extends LinearOpMode{
 		//FtcDashboard dashboard = FtcDashboard.getInstance();
 
 		while(opModeIsActive()){
-			upwards.setPower(1);
+			//upwards.setPower(0.5);
 			if (gamepad1.a){
-				upwards.setPower(0.5);
+				spin.setPower(0.5);
 				telemetry.speak("AAAAAAA");
 			}
 			if (gamepad1.b){
@@ -77,6 +85,9 @@ public class Drive2electricBugaloo extends LinearOpMode{
 			}
 			if (upwards.getPower() <0) {
 				telemetry.speak("yes");
+			}
+			if (gamepad1.x){
+				launch.setPower(0.5);
 			}
 
 //			double lx=gamepad1.left_stick_x;
