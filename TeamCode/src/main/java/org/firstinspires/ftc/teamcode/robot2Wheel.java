@@ -33,7 +33,7 @@ public class robot2Wheel {
     public static Point goal =new Point(0,0);
     public static Point redGoal = new Point(75, -36);
 
-    DcMotor /*rightBack, leftBack,*/ spin;
+    DcMotor rightBack, leftBack, spin;
     //DcMotor leftOdo, rightOdo, horizontalOdo;
     DcMotorEx launch;
     BNO055IMU imu;
@@ -52,8 +52,8 @@ public class robot2Wheel {
 
     //List<CurvePoint> path = new ArrayList<>();
 
-    DcMotor[] driveTrain;
-    DcMotor[] odo;
+    //DcMotor[] driveTrain;
+    //DcMotor[] odo;
 
     private int currentPath=0;
 
@@ -65,9 +65,9 @@ public class robot2Wheel {
         launch = (DcMotorEx) hardwareMap.get(DcMotor.class, "launch");
         spin = hardwareMap.get(DcMotor.class,"spin");
         //rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        //rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
         //leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        //leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
 
        // driveTrain = new DcMotor[]{leftBack, rightBack};
 
@@ -94,7 +94,7 @@ public class robot2Wheel {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
         angle = imu.getAngularOrientation();
-
+/*
         for(DcMotor pod: odo){
             pod.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
@@ -102,11 +102,14 @@ public class robot2Wheel {
             pod.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
+ */
+
 
 
         //location= new Position(0, 0, angle.firstAngle, leftOdo, rightOdo, horizontalOdo, imu, linearOpMode);
-        location.start();
+        //location.start();
     }
+    /*
     public void initOpenCV(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         cam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -161,6 +164,8 @@ public class robot2Wheel {
         return angleWrap(getHeading() +Math.PI - Math.atan2(redGoal.y-getY(), redGoal.x-getX()));
     }
 
+     */
+
     public void upward(){
         upwards.setPower(-0.8);
     }
@@ -171,6 +176,8 @@ public class robot2Wheel {
         spin.setPower(0.8);
 
     }
+
+
 
 
 /*
@@ -346,6 +353,8 @@ public class robot2Wheel {
      *
      *
      */
+
+    /*
     public void moveToPosition(double x, double y, double speed, double endAngle, double follow){
         double xDis=x-getX(); //x distance to point global
         double yDis=y-getY(); //y distance to point global
@@ -474,5 +483,7 @@ public class robot2Wheel {
 
         return powers;
     }
+
+     */
 
 }

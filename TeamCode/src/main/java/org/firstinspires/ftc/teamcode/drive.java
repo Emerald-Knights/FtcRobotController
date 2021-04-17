@@ -19,7 +19,7 @@ import org.opencv.core.Point;
 
 @TeleOp(name="drive", group="f")
 public class drive extends LinearOpMode{
-    robot2Wheel boWei = new robot2Wheel();
+    robot boWei = new robot();
 
     @Override
     public void runOpMode(){
@@ -30,6 +30,19 @@ public class drive extends LinearOpMode{
         boWei.location.setPosition(0, 0, 0);
 
         waitForStart();
+
+        boWei.runtime.reset();
+
+        double integral =0;
+        double curTime=boWei.runtime.seconds();
+
+        double angleDiff=0;
+
+        double prevAngleDiff=angleDiff;
+
+        double prevTime=curTime;
+
+
         boolean isMoving = false;
         boolean aIsPressed = false;
         boolean leftPressed = false;
@@ -56,6 +69,12 @@ public class drive extends LinearOpMode{
         boolean prevLStick=false;
 
         boolean aimLock=false;
+        boolean y1Pressed = false;
+        boolean x1Pressed = false;
+
+        boolean flip=false;
+        boolean grab = false;
+
 
         //FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -137,7 +156,36 @@ public class drive extends LinearOpMode{
                 dRightHeld=false;
             }
 
+            if (gamepad1.y && !y1Pressed){
+                grab=!grab;
+                if(grab){
+                    boWei.grabber.setPosition(0.2);
 
+                }
+                else{
+                    boWei.grabber.setPosition(0.8);
+                }
+
+                y1Pressed = true;
+            }
+            if (!gamepad1.y){
+                y1Pressed = false;
+            }
+            telemetry.addData("grab:", grab);
+            if (gamepad1.x && !x1Pressed){
+                flip=!flip;
+                if(flip){
+                    boWei.flippyFlip.setPosition(0.5);
+                }
+                else{
+                    boWei.flippyFlip.setPosition(0.8);
+
+                }
+                x1Pressed = true;
+            }
+            if (!gamepad1.x){
+                x1Pressed = false;
+            }
             //collection
             if (gamepad2.left_bumper){
                 boWei.reverseCollect();
@@ -217,6 +265,8 @@ public class drive extends LinearOpMode{
             if(rsb && !rightPressed){
                 aimLock= !aimLock;
 
+                integral=0;
+
                 rightPressed=true;
             }
 
@@ -242,10 +292,14 @@ public class drive extends LinearOpMode{
             }
 
             if(aimLock){
-                double angleDiff= boWei.getAngleDiff();
+
                 if(Math.abs(angleDiff)>.05){
-                    int d=0;
-                    rx= angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
+                    double slope= (angleDiff-prevAngleDiff)/(curTime-prevTime);
+
+                    integral+=(prevAngleDiff+angleDiff)/2.0*(curTime-prevTime);
+
+                    rx=angleDiff*boWei.kp + integral*boWei.ki + slope*boWei.kd;
+                    //rx= angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
 
                 }
                 else{
@@ -300,21 +354,20 @@ public class drive extends LinearOpMode{
             //telemetry.addData("LB", lb);
             //telemetry.addData("RF", rf);
             //telemetry.addData("RB", rb);
-
-//            telemetry.addData("left", -boWei.leftOdo.getCurrentPosition());
-//            telemetry.addData("right", boWei.rightOdo.getCurrentPosition());
-//            telemetry.addData("horizontal", boWei.horizontalOdo.getCurrentPosition());
+            telemetry.addData("left", -boWei.leftOdo.getCurrentPosition());
+            telemetry.addData("right", boWei.rightOdo.getCurrentPosition());
+            telemetry.addData("horizontal", boWei.horizontalOdo.getCurrentPosition());
             telemetry.addData("Diff:", (boWei.location.positionLeft + boWei.location.forwardEncoderToRadian *  angle) + (boWei.location.positionRight - boWei.location.forwardEncoderToRadian * -angle));
 
             telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
 
-            /*           telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
+            telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
             telemetry.addData("tick/s", boWei.launch.getVelocity());
             telemetry.addData("rate", rate);
             telemetry.addData("Field oriented: ", fieldOriented);
 
 
-             */
+
             telemetry.update();
 
 
@@ -324,13 +377,20 @@ public class drive extends LinearOpMode{
 
 
 
-//            boWei.leftFront.setPower(lf * ratio * toggle);
-//            boWei.leftBack.setPower(lb * ratio * toggle);
-//            boWei.rightFront.setPower(rf * ratio * toggle);
-//            boWei.rightBack.setPower(rb * ratio * toggle);
+            boWei.leftFront.setPower(lf * ratio * toggle);
+            boWei.leftBack.setPower(lb * ratio * toggle);
+            boWei.rightFront.setPower(rf * ratio * toggle);
+            boWei.rightBack.setPower(rb * ratio * toggle);
 
             prevLStick=lsb;
             prevRStick=rsb;
+
+            prevAngleDiff=angleDiff;
+
+            prevTime=curTime;
+
+            angleDiff= boWei.getAngleDiff();
+            curTime=boWei.runtime.seconds();
         }
 
     }

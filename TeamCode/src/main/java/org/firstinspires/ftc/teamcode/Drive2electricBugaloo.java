@@ -44,6 +44,8 @@ public class Drive2electricBugaloo extends LinearOpMode{
 		launch.setPower(0);
 		launch.setDirection(DcMotorSimple.Direction.FORWARD);
 		launch.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
 		waitForStart();
 //		boolean isMoving = false;
 //		boolean aIsPressed = false;
@@ -81,7 +83,7 @@ public class Drive2electricBugaloo extends LinearOpMode{
 				telemetry.speak("AAAAAAA");
 			}
 			if (gamepad1.b){
-				upwards.setPower(0);
+				upwards.setPower(0.5);
 			}
 			if (upwards.getPower() <0) {
 				telemetry.speak("yes");
@@ -89,6 +91,7 @@ public class Drive2electricBugaloo extends LinearOpMode{
 			if (gamepad1.x){
 				launch.setPower(0.5);
 			}
+
 
 //			double lx=gamepad1.left_stick_x;
 //			double ly=-gamepad1.left_stick_y;
@@ -122,7 +125,7 @@ public class Drive2electricBugaloo extends LinearOpMode{
 //                boWei.rightLift.setPosition(.53);
 //            }
 //
-// */
+//
 //			if (gamepad2.dpad_up && !dUpHeld){
 //				rate++;
 //				if (rate > 6){

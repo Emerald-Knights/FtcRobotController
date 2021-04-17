@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorBNO055IMU;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -44,11 +45,14 @@ public class robot {
     TFObjectDetector tfod;
     Servo leftLift;
     Servo rightLift;
+    Servo grabber, flippyFlip;
     DcMotor upwards;
 
     Position location;
     OpenCvCamera cam;
     ringPipeline pipeline;
+
+    ElapsedTime runtime= new ElapsedTime();
 
     //List<CurvePoint> path = new ArrayList<>();
 
@@ -71,12 +75,14 @@ public class robot {
 
         driveTrain = new DcMotor[]{leftFront, leftBack, rightBack, rightFront};
 
-        leftLift=hardwareMap.get(Servo.class, "leftLift");
-        rightLift=hardwareMap.get(Servo.class, "rightLift");
+        //leftLift=hardwareMap.get(Servo.class, "leftLift");
+        //rightLift=hardwareMap.get(Servo.class, "rightLift");
+        grabber = hardwareMap.get(Servo.class, "grabber");
+        flippyFlip = hardwareMap.get(Servo.class, "flippyFlip");
 
-        leftOdo= hardwareMap.get(DcMotor.class, "spin");
-        rightOdo = hardwareMap.get(DcMotor.class, "rightBack");
-        horizontalOdo = hardwareMap.get(DcMotor.class, "leftFront");
+        leftOdo= hardwareMap.get(DcMotor.class, "upwards");
+        rightOdo = hardwareMap.get(DcMotor.class, "rightFront");
+        horizontalOdo = hardwareMap.get(DcMotor.class, "leftBack");
 
         odo = new DcMotor[]{leftOdo, rightOdo, horizontalOdo};
 
@@ -85,7 +91,7 @@ public class robot {
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection((DcMotorSimple.Direction.REVERSE));
         //leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightLift.setDirection(Servo.Direction.REVERSE);
+        //rightLift.setDirection(Servo.Direction.REVERSE);
         this.linearOpMode = linearOpMode;
         this.hardwareMap = hardwareMap;
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -165,10 +171,10 @@ public class robot {
         upwards.setPower(-0.8);
     }
     public void collect(){
-        spin.setPower(-0.8);
+        spin.setPower(0.8);
     }
     public void reverseCollect(){
-        spin.setPower(0.8);
+        spin.setPower(-0.8);
 
     }
 
@@ -468,6 +474,50 @@ public class robot {
         powers[3]=-1*Math.cos(angle+Math.PI/4)-turn;
 
         return powers;
+    }
+    double kp=0;
+    double ki=0;
+    double kd=0;
+
+    public void turn(double endAngle){
+        double integral = 0;
+        double newTime = runtime.seconds();
+        double oldTime = 0;
+        double error = angleWrap(imu.getAngularOrientation().firstAngle - endAngle);
+        oldTime=newTime;
+        newTime = runtime.seconds();
+        double timeDiff = newTime - oldTime;
+
+        if(timeDiff==0){
+            timeDiff+=.00001;
+        }
+
+        double oldError = error;
+        error = angleWrap(imu.getAngularOrientation().firstAngle - endAngle);
+
+        double errorDif = angleWrap(error - oldError);
+
+        double slope = errorDif/timeDiff;
+
+        integral = integral + timeDiff * ((oldError + error)/2.0);
+
+        double output = kp* error + kd* slope + ki * integral +.3;
+
+        double[] powers= drive(0,0,output);
+
+        for(int i=0; i<4; i++){
+            driveTrain[i].setPower(powers[i]);
+        }
+
+        try{
+            Thread.sleep(100); //sleep 1 millisec
+
+        }
+        catch(Exception e){}
+
+        for(int i=0; i<4; i++){
+            driveTrain[i].setPower(0);
+        }
     }
 
 }

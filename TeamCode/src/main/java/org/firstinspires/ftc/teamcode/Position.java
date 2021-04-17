@@ -19,9 +19,9 @@ public class Position extends Thread{
     LinearOpMode opMode;
 
     //constants to convert encoders to distance moved
-    private static double encoderToInch=1682; //will need to tune 1682
+    private static double encoderToInch=1712; //will need to tune 1682
     private static double horizEncoderToInch=1560; //will need to tune
-    final double horizEncoderToRadian= 1250;
+    final double horizEncoderToRadian= 1391;
     final double forwardEncoderToRadian = 3019;
     //current encoder position/ angle position
     double positionLeft;
@@ -67,7 +67,7 @@ public class Position extends Thread{
 
             //get current positions
             positionLeft=-this.leftOdo.getCurrentPosition();
-            positionRight=this.rightOdo.getCurrentPosition();
+            positionRight=-this.rightOdo.getCurrentPosition();
             positionHoriz=-this.horizontalOdo.getCurrentPosition();
             angle=imu.getAngularOrientation().firstAngle;
 
