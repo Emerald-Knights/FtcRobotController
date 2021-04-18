@@ -36,6 +36,7 @@ public class robot {
 
     DcMotor rightFront, rightBack, leftFront, leftBack, spin;
     DcMotor leftOdo, rightOdo, horizontalOdo;
+    DcMotor grabArm;
     DcMotorEx launch;
     BNO055IMU imu;
     Orientation angle;
@@ -73,6 +74,7 @@ public class robot {
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
 
+        //grabArm = hardwareMap.get(DcMotor.class, "grabArm");
         driveTrain = new DcMotor[]{leftFront, leftBack, rightBack, rightFront};
 
         //leftLift=hardwareMap.get(Servo.class, "leftLift");
@@ -81,16 +83,16 @@ public class robot {
         flippyFlip = hardwareMap.get(Servo.class, "flippyFlip");
 
         leftOdo= hardwareMap.get(DcMotor.class, "upwards");
-        rightOdo = hardwareMap.get(DcMotor.class, "rightFront");
-        horizontalOdo = hardwareMap.get(DcMotor.class, "leftBack");
+        rightOdo = hardwareMap.get(DcMotor.class, "leftFront");
+        horizontalOdo = hardwareMap.get(DcMotor.class, "rightBack");
 
         odo = new DcMotor[]{leftOdo, rightOdo, horizontalOdo};
 
         upwards=hardwareMap.get(DcMotor.class, "upwards");
 
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightFront.setDirection((DcMotorSimple.Direction.REVERSE));
-        //leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        //rightFront.setDirection((DcMotorSimple.Direction.REVERSE));
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         //rightLift.setDirection(Servo.Direction.REVERSE);
         this.linearOpMode = linearOpMode;
         this.hardwareMap = hardwareMap;
