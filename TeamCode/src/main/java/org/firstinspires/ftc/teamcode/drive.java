@@ -361,6 +361,7 @@ public class drive extends LinearOpMode{
 
             telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
 
+            telemetry.addData("distance based shoot?: ", distanceBasedShoot);
             telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
             telemetry.addData("tick/s", boWei.launch.getVelocity());
             telemetry.addData("rate", rate);

@@ -25,7 +25,7 @@ public class f extends LinearOpMode {
 
         List<CurvePoint> toShoot= new ArrayList<>();
         toShoot.add(new CurvePoint(boWei.getPosition()));
-        toShoot.add(new CurvePoint(12, -36, Math.PI));
+        toShoot.add(new CurvePoint(12, -24, Math.PI));
         //toShoot.add(new CurvePoint(-25, -40, Math.PI));
 
         List<CurvePoint> toGoal = new ArrayList<>();
@@ -48,6 +48,8 @@ public class f extends LinearOpMode {
         else if (cases == 4){
             toGoal.add(new CurvePoint(60,-60, Math.PI));
         }
+
+        boWei.followCurveSync(toShoot, 8, .8, 4);
 
         double angleDiff= angleWrap(boWei.getHeading()+Math.PI- Math.atan2(robot.redGoal.y-boWei.getY(), robot.redGoal.x-boWei.getX()));
 
