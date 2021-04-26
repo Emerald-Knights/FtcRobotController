@@ -21,8 +21,8 @@ public class Position extends Thread{
     //constants to convert encoders to distance moved
     private static double encoderToInch=1716; //will need to tune 1682
     private static double horizEncoderToInch=1666; //will need to tune
-    final double horizEncoderToRadian= 1697;
-    final double forwardEncoderToRadian = 3019;
+    final double horizEncoderToRadian= 3807;//1697
+    final double forwardEncoderToRadian = 1400; //3019
     //current encoder position/ angle position
     double positionLeft;
     double positionRight;

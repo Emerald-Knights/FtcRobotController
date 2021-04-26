@@ -27,7 +27,8 @@ public class drive extends LinearOpMode{
         //float current = 0;
         //float currentVex = 0;
         //boWei.location.setPosition(robot.endX, robot.endY, robot.endAngle);
-        boWei.location.setPosition(0, 0, 0);
+        //boWei.location.setPosition(0, -36, 0); //0,0,0
+        boWei.location.setPosition(robot.endX, robot.endY, robot.endAngle);
 
         waitForStart();
 
@@ -56,7 +57,7 @@ public class drive extends LinearOpMode{
         boolean lbumpPressed=false;
         boolean yIsPressed=false;
 
-        boolean distanceBasedShoot=false;
+        boolean distanceBasedShoot=true;
         double rate=1;
 
         double oldAngle = 0;
@@ -75,10 +76,35 @@ public class drive extends LinearOpMode{
         boolean flip=false;
         boolean grab = false;
 
+        double maxPow=20;
 
-        //FtcDashboard dashboard = FtcDashboard.getInstance();
+        boolean a1Pressed=false;
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+
+
+        boolean cheats=false;
+
+        //boolean[] code = {false, false, false, false, false, false, false, false, false, false, false, false};
+        int currentButton=0;
 
         while(opModeIsActive()){
+            boolean[] buttons = {gamepad1.dpad_up, gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.dpad_down, gamepad1.dpad_left, gamepad1.dpad_right, gamepad1.dpad_left, gamepad1.dpad_right, gamepad1.b, gamepad1.a, gamepad1.start, gamepad1.back};
+
+
+            if(!gamepad1.atRest()){
+                if(!buttons[currentButton]){
+                    currentButton=0;
+                }
+                else{
+                    currentButton++;
+                }
+            }
+            if(currentButton==12){
+                cheats=true;
+            }
+            
+
+
             double lx=gamepad1.left_stick_x;
             double ly=-gamepad1.left_stick_y;
             double rx=gamepad1.right_stick_x;
@@ -112,10 +138,14 @@ public class drive extends LinearOpMode{
             }
 
  */
+            if (gamepad2.x){
+                boWei.location.setPosition(boWei.getX(), boWei.getY(), 0);
+            }
+
             if (gamepad2.dpad_up && !dUpHeld){
                 rate++;
-                if (rate > 6){
-                    rate=6;
+                if (rate > maxPow){
+                    rate=maxPow;
                 }
                 dUpHeld = true;
             }
@@ -146,8 +176,8 @@ public class drive extends LinearOpMode{
             }
             if(gamepad2.dpad_right&& !dRightHeld){
                 rate+=.1;
-                if(rate>6){
-                    rate=6;
+                if(rate>maxPow){
+                    rate=maxPow;
                 }
 
                 dRightHeld=true;
@@ -188,10 +218,10 @@ public class drive extends LinearOpMode{
             }
             //collection
             if (gamepad2.left_bumper){
-                boWei.reverseCollect();
+                boWei.collect();
             }
             else if (gamepad2.right_bumper){
-                boWei.collect();
+                boWei.reverseCollect();
             }
             else {
                 boWei.spin.setPower(0);
@@ -248,6 +278,16 @@ public class drive extends LinearOpMode{
                 bIsPressed=false;
             }
 
+            if (gamepad2.right_trigger > 0.3){
+                boWei.upwards.setPower(0.8);
+            }
+            else if(gamepad2.left_trigger > 0.3){
+                boWei.upwards.setPower(-0.8);
+            }
+            else{
+                boWei.upwards.setPower(0);
+            }
+
             if (lsb && !leftPressed){
                 if (!slowmodeActive){
                     toggle = 0.5;
@@ -292,20 +332,29 @@ public class drive extends LinearOpMode{
             }
 
             if(aimLock){
-
-                if(Math.abs(angleDiff)>.05){
+                if(Math.abs(angleDiff)>.06){
                     double slope= (angleDiff-prevAngleDiff)/(curTime-prevTime);
 
                     integral+=(prevAngleDiff+angleDiff)/2.0*(curTime-prevTime);
 
-                    rx=angleDiff*boWei.kp + integral*boWei.ki + slope*boWei.kd;
+                    //rx=angleDiff*boWei.kp + integral*boWei.ki + slope*boWei.kd+.3;
                     //rx= angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
-
+                    
+                    rx=angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/12.0 + .3);
                 }
                 else{
                     rx=0;
                 }
             }
+
+            if(gamepad1.a && !a1Pressed){
+                boWei.location.setPosition(0, -36, boWei.getHeading());
+                a1Pressed=true;
+            }
+            if(!gamepad1.a){
+                a1Pressed=false;
+            }
+
 
             double lf;
             double lb;
@@ -358,7 +407,7 @@ public class drive extends LinearOpMode{
             telemetry.addData("right", boWei.rightOdo.getCurrentPosition());
             telemetry.addData("horizontal", boWei.horizontalOdo.getCurrentPosition());
             telemetry.addData("Diff:", (boWei.location.positionLeft + boWei.location.forwardEncoderToRadian *  angle) + (boWei.location.positionRight - boWei.location.forwardEncoderToRadian * -angle));
-
+            telemetry.addData("Distance:", Math.hypot(boWei.redGoal.x-boWei.getX(), boWei.redGoal.y-boWei.getY()));
             telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
 
             telemetry.addData("distance based shoot?: ", distanceBasedShoot);
@@ -369,12 +418,17 @@ public class drive extends LinearOpMode{
 
 
 
+
+
             telemetry.update();
 
 
             TelemetryPacket packet = new TelemetryPacket();
             packet.fieldOverlay().setFill("Green").setStrokeWidth(1).setStroke("goldenrod").fillCircle(boWei.getX(), boWei.getY(), 5);
-            //dashboard.sendTelemetryPacket(packet);
+            packet.put("velocity", boWei.launch.getVelocity(AngleUnit.RADIANS));
+            packet.put("rate", rate);
+            //packet.put("want rate", 8.6);
+            dashboard.sendTelemetryPacket(packet);
 
 
 

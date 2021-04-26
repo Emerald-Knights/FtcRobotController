@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -21,6 +22,7 @@ import org.opencv.core.Point;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +33,10 @@ public class robot {
     public static double endX=0;
     public static double endY=0;
     public static double endAngle;
+
+
     public static Point goal =new Point(0,0);
-    public static Point redGoal = new Point(75, -36);
+    public static Point redGoal = new Point(72, -36);
 
     DcMotor rightFront, rightBack, leftFront, leftBack, spin;
     DcMotor leftOdo, rightOdo, horizontalOdo;
@@ -50,7 +54,8 @@ public class robot {
     DcMotor upwards;
 
     Position location;
-    OpenCvCamera cam;
+    OpenCvWebcam cam;
+
     ringPipeline pipeline;
 
     ElapsedTime runtime= new ElapsedTime();
@@ -102,6 +107,10 @@ public class robot {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
         angle = imu.getAngularOrientation();
+
+        PIDFCoefficients launchPID= launch.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        launchPID.p=30;
+        launchPID.d=20;
 
         for(DcMotor pod: odo){
             pod.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -162,21 +171,30 @@ public class robot {
     }
 
     public double getRate(){
-        return .0136904762 * (Math.hypot(redGoal.x-getX(), redGoal.y-getY()))+3.542857143;
+        //return .0136904762 * (Math.hypot(redGoal.x-getX(), redGoal.y-getY()))+3.542857143;
+        double distance = Math.hypot(redGoal.x-getX(), redGoal.y-getY());
+
+        if(Math.abs(distance) < 90){
+            return 8.8;
+            //return 9.0;
+        }
+
+        return .020933333333333 * (distance) + 6.590;
     }
 
     public double getAngleDiff(){
-        return angleWrap(getHeading() +Math.PI - Math.atan2(redGoal.y-getY(), redGoal.x-getX()));
+        //return angleWrap(getHeading() +Math.PI - Math.atan2(redGoal.y-getY(), redGoal.x-getX()));
+        return angleWrap(getHeading() + 2.8 - Math.atan2(redGoal.y-getY(), redGoal.x-getX())); //2.85 //95
     }
 
     public void upward(){
         upwards.setPower(-0.8);
     }
     public void collect(){
-        spin.setPower(0.8);
+        spin.setPower(-0.8);
     }
     public void reverseCollect(){
-        spin.setPower(-0.8);
+        spin.setPower(0.8);
 
     }
 
@@ -446,7 +464,7 @@ public class robot {
             //System.out.println(allPointsF.get(allPointsF.size()-1).x + " "+ allPointsF.get(allPointsF.size()-1).y);
 
             //allPointsF.clear();
-
+/*
             linearOpMode.telemetry.addData("lf", leftFront.getPower());
             linearOpMode.telemetry.addData("lb", leftBack.getPower());
             linearOpMode.telemetry.addData("rb", rightBack.getPower());
@@ -454,6 +472,8 @@ public class robot {
             linearOpMode.telemetry.addData("distance", distanceToPoint(getX(), getY(),allPoints.get(allPoints.size()-1).x, allPoints.get(allPoints.size()-1).y));
             linearOpMode.telemetry.addData("Position", ("("+round1000(getX())+", "+round1000( getY() ) + ", " + round1000(getHeading())+")"));
             linearOpMode.telemetry.update();
+
+ */
             try{
                 Thread.sleep(10);
             }
@@ -477,7 +497,7 @@ public class robot {
 
         return powers;
     }
-    double kp=0;
+    double kp=1/Math.PI/2.0;
     double ki=0;
     double kd=0;
 
@@ -520,6 +540,11 @@ public class robot {
         for(int i=0; i<4; i++){
             driveTrain[i].setPower(0);
         }
+    }
+    public static void setEndPosition(CurvePoint end){
+        endX=end.x;
+        endY=end.y;
+        endAngle=end.heading;
     }
 
 }

@@ -44,7 +44,7 @@ public class redPure extends LinearOpMode {
 
         double angleDiff= angleWrap(boWei.getHeading()+Math.PI- Math.atan2(robot.redGoal.y-boWei.getY(), robot.redGoal.x-boWei.getX()));
 
-        while(Math.abs(angleDiff)>.015 && opModeIsActive()){
+        while(Math.abs(angleDiff)>.08 && opModeIsActive()){
             telemetry.addData("angle diff", angleDiff);
             telemetry.addData("position" , "("+boWei.getX()+","+boWei.getY()+")");
             telemetry.update();
