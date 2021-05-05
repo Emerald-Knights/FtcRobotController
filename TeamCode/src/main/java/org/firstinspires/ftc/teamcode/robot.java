@@ -109,8 +109,8 @@ public class robot {
         angle = imu.getAngularOrientation();
 
         PIDFCoefficients launchPID= launch.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        launchPID.p=30;
-        launchPID.d=20;
+        launchPID.p=36;
+        launchPID.d=30;
 
         for(DcMotor pod: odo){
             pod.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
