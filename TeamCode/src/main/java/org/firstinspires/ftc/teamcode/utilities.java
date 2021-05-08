@@ -1,11 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class utilities {
+
+    /**
+     * ppl online say utility classes are bad so yall can break my bad habbit next year lmao
+     *
+     *
+     */
     public static double checkAngle(double angle){
         return angle % Math.PI;
     }
@@ -94,5 +101,13 @@ public class utilities {
     public static double round1000(double num){
         return Math.round(num*1000.0)/1000.0;
     }
-
+    public static boolean touches (Rect r1, Rect r2){
+        if(r2.br().x < r1.tl().x  || r1.br().x < r2.tl().x){
+            return false;
+        }
+        if(r2.br().y < r1.tl().y  || r1.br().y < r2.tl().y){
+            return false;
+        }
+        return true;
+    }
 }

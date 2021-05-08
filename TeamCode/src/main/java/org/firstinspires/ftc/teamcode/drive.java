@@ -76,6 +76,8 @@ public class drive extends LinearOpMode{
         boolean flip=false;
         boolean grab = false;
 
+        boolean xPressed = false;
+        boolean moving = false;
         double maxPow=20;
 
         boolean a1Pressed=false;
@@ -88,22 +90,22 @@ public class drive extends LinearOpMode{
         int currentButton=0;
 
         while(opModeIsActive()){
-            boolean[] buttons = {gamepad1.dpad_up, gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.dpad_down, gamepad1.dpad_left, gamepad1.dpad_right, gamepad1.dpad_left, gamepad1.dpad_right, gamepad1.b, gamepad1.a, gamepad1.start, gamepad1.back};
 
 
-            if(!gamepad1.atRest()){
-                if(!buttons[currentButton]){
-                    currentButton=0;
+
+            /*
+            if(gamepad2.x && !xPressed){
+                if (!moving){
+                    boWei.moveToPosition(0,0,0,0);// find point later
+                    moving = true;
                 }
                 else{
-                    currentButton++;
+                    boWei.moveToPosition(boWei.getX(), boWei.getY(), 1, boWei.getHeading());
                 }
+                xPressed = true;
             }
-            if(currentButton==12){
-                cheats=true;
-            }
-            
 
+             */
 
             double lx=gamepad1.left_stick_x;
             double ly=-gamepad1.left_stick_y;

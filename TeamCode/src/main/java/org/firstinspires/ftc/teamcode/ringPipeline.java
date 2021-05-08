@@ -13,6 +13,7 @@ import org.opencv.core.MatOfPoint;
 
 import java.util.ArrayList;
 import java.util.List;
+import static org.firstinspires.ftc.teamcode.utilities.*;
 
 public class ringPipeline extends OpenCvPipeline{
     //List<food> shoppingList = newArrayList<>();
@@ -53,7 +54,7 @@ public class ringPipeline extends OpenCvPipeline{
         //This line makes it so the image now has YCrCb color values instead of RGB values (google YCrCb). This is saved in a new image, thing
         Imgproc.cvtColor(input, thing, Imgproc.COLOR_RGB2YCrCb);
 
-        ybrV=thing.get(xc, yc);
+        ybrV=thing.get(yc, xc);
 
         //We only are going to be looking at the first (technically 2nd because the start at 0 thing) of YCrCb (so the Cr part).
         //if we were to extract the 1 channel of rgb, that would be g (green). 0 is R, 2 is B
@@ -61,7 +62,10 @@ public class ringPipeline extends OpenCvPipeline{
 
         //checks what range of values pixels are in. If they are outside of 160 to 220 for the Cr channel (see previous line), they are removed.
         //displaying "thing" now would show white pixels for all pixels that are red/ orange, while everything else would be black
-        Core.inRange(thing, new Scalar(0, 160, 40), new Scalar(255, 180, 100), thing); //75
+        //Core.inRange(thing, new Scalar(0, 160, 40), new Scalar(255, 180, 100), thing); //75
+        Core.inRange(thing, new Scalar(0, 140, 50), new Scalar(255, 200, 130), thing); //cb:100
+        //Core.bitwise_not(thing, thing);
+
         //Imgproc.threshold(thing, thing, 160, 180, Imgproc.THRESH_BINARY); //220
 
         Imgproc.dilate(thing, thing, Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(12,15)));
@@ -80,7 +84,9 @@ public class ringPipeline extends OpenCvPipeline{
         for(MatOfPoint point: matList){
             //xc, yc for crosshair x and y coordinate
             Rect drawThing = Imgproc.boundingRect(point);
-            if (drawThing.area() > max.area() && drawThing.contains(crosshairPoint)){
+            //if (drawThing.area() > max.area() && drawThing.contains(crosshairPoint)){
+
+            if (drawThing.area() > max.area() && touches(drawThing, crosshair)){
                 max = drawThing;
             }
             //rectangleName.contains(point);
