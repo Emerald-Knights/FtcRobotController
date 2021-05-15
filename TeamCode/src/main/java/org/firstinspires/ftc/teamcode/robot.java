@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -52,7 +53,7 @@ public class robot {
     Servo rightLift;
     Servo grabber, flippyFlip;
     DcMotor upwards;
-
+    DistanceSensor thanks;
     Position location;
     OpenCvWebcam cam;
 
@@ -78,7 +79,7 @@ public class robot {
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-
+        thanks = hardwareMap.get(DistanceSensor.class, "thanks");
         //grabArm = hardwareMap.get(DcMotor.class, "grabArm");
         driveTrain = new DcMotor[]{leftFront, leftBack, rightBack, rightFront};
 
@@ -170,6 +171,12 @@ public class robot {
         return new CurvePoint(getX(), getY(), getHeading());
     }
 
+    public boolean hasRing(double distance){
+        if (distance < 5.5){
+            return true;
+        }
+        return false;
+    }
     public double getRate(){
         //return .0136904762 * (Math.hypot(redGoal.x-getX(), redGoal.y-getY()))+3.542857143;
         double distance = Math.hypot(redGoal.x-getX(), redGoal.y-getY());

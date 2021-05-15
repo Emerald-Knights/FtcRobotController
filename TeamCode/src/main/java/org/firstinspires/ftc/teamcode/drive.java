@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import static org.firstinspires.ftc.teamcode.utilities.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.opencv.core.Point;
 
 @TeleOp(name="drive", group="f")
@@ -56,6 +57,9 @@ public class drive extends LinearOpMode{
         double toggle = 1;
         boolean lbumpPressed=false;
         boolean yIsPressed=false;
+
+        int ringsShot = 0;
+        boolean counter = false;
 
         boolean distanceBasedShoot=true;
         double rate=1;
@@ -203,7 +207,15 @@ public class drive extends LinearOpMode{
             if (!gamepad1.y){
                 y1Pressed = false;
             }
-            telemetry.addData("grab:", grab);
+            boolean hasRing = boWei.hasRing(boWei.thanks.getDistance(DistanceUnit.CM));
+            if (!hasRing && counter) {
+                ringsShot++;
+            }
+            counter = hasRing;
+           // telemetry.addData("grab:", grab);
+            telemetry.addData("grabPos:", boWei.grabber.getPosition());
+            telemetry.addData("Distance:", boWei.thanks.getDistance(DistanceUnit.CM));
+            telemetry.addData("hasRing", boWei.hasRing(boWei.thanks.getDistance(DistanceUnit.CM)));
             if (gamepad1.x && !x1Pressed){
                 flip=!flip;
                 if(flip){
@@ -411,7 +423,7 @@ public class drive extends LinearOpMode{
             telemetry.addData("Diff:", (boWei.location.positionLeft + boWei.location.forwardEncoderToRadian *  angle) + (boWei.location.positionRight - boWei.location.forwardEncoderToRadian * -angle));
             telemetry.addData("Distance:", Math.hypot(boWei.redGoal.x-boWei.getX(), boWei.redGoal.y-boWei.getY()));
             telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
-
+            telemetry.addData("rings", ringsShot);
             telemetry.addData("distance based shoot?: ", distanceBasedShoot);
             telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
             telemetry.addData("tick/s", boWei.launch.getVelocity());
