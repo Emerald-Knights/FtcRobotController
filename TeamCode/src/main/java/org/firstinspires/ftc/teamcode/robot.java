@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -53,7 +54,8 @@ public class robot {
     Servo rightLift;
     Servo grabber, flippyFlip;
     DcMotor upwards;
-    DistanceSensor thanks;
+    //DistanceSensor Dora;
+    ColorSensor thanks;
     Position location;
     OpenCvWebcam cam;
 
@@ -79,9 +81,11 @@ public class robot {
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-        thanks = hardwareMap.get(DistanceSensor.class, "thanks");
+        //Dora = hardwareMap.get(DistanceSensor.class, "Dora");
+        thanks = hardwareMap.get(ColorSensor.class, "thanks");
         //grabArm = hardwareMap.get(DcMotor.class, "grabArm");
         driveTrain = new DcMotor[]{leftFront, leftBack, rightBack, rightFront};
+
 
         //leftLift=hardwareMap.get(Servo.class, "leftLift");
         //rightLift=hardwareMap.get(Servo.class, "rightLift");
@@ -110,8 +114,8 @@ public class robot {
         angle = imu.getAngularOrientation();
 
         PIDFCoefficients launchPID= launch.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        launchPID.p=36;
-        launchPID.d=30;
+        launchPID.p=3;
+        launchPID.d=2;
 
         for(DcMotor pod: odo){
             pod.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -171,12 +175,23 @@ public class robot {
         return new CurvePoint(getX(), getY(), getHeading());
     }
 
+
     public boolean hasRing(double distance){
-        if (distance < 5.5){
+        if (distance < 8.2){
             return true;
         }
         return false;
     }
+
+
+    public boolean hasRingC(){
+        if (thanks.red() > thanks.blue()){
+            return true;
+        }
+        return false;
+    }
+
+
     public double getRate(){
         //return .0136904762 * (Math.hypot(redGoal.x-getX(), redGoal.y-getY()))+3.542857143;
         double distance = Math.hypot(redGoal.x-getX(), redGoal.y-getY());

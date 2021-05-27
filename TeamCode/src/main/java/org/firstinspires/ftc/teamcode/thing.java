@@ -18,6 +18,7 @@ public class thing extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()){
             sleep(500);
+            /*
             boolean hasRing = boWei.hasRing(boWei.thanks.getDistance(DistanceUnit.CM));
             if (!hasRing && counter) {
                 ringsShot++;
@@ -32,14 +33,16 @@ public class thing extends LinearOpMode {
             //boWei.launch.setVelocity(0);
             //boWei.spin.setPower(0);
             //boWei.upwards.setPower(0);
+
+             */
             if (ringsShot > 0){
                 boWei.launch.setVelocity(0);
                 boWei.spin.setPower(0);
                 boWei.upwards.setPower(0);
             }
             telemetry.addData("rings:", ringsShot);
-            telemetry.addData("hasRing", hasRing);
-            telemetry.addData("Distance", boWei.thanks.getDistance(DistanceUnit.CM));
+            //telemetry.addData("hasRing", hasRing);
+            //telemetry.addData("Distance", boWei.thanks.getDistance(DistanceUnit.CM));
             telemetry.update();
 
         }

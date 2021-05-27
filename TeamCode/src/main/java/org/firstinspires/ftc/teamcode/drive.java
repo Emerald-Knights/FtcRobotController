@@ -207,15 +207,48 @@ public class drive extends LinearOpMode{
             if (!gamepad1.y){
                 y1Pressed = false;
             }
+
+            /*if (boWei.thanks.red() > boWei.thanks.blue()){
+                counter = true;
+            }
+            else {
+                counter = false;
+            }
+
             boolean hasRing = boWei.hasRing(boWei.thanks.getDistance(DistanceUnit.CM));
             if (!hasRing && counter) {
                 ringsShot++;
             }
             counter = hasRing;
+
+             */
+
+            /*
+            boolean hasRing = false;
+            if (boWei.hasRing(boWei.Dora.getDistance(DistanceUnit.CM))){ //|| boWei.hasRingC()){
+                hasRing = true;
+            }
+            if (!hasRing && counter){
+                ringsShot++;
+            }
+            counter = hasRing;
+*/
+            if (boWei.thanks.alpha() >6000){
+                //counter = true;
+                boWei.location.setX(36);
+            }
+
+
            // telemetry.addData("grab:", grab);
             telemetry.addData("grabPos:", boWei.grabber.getPosition());
-            telemetry.addData("Distance:", boWei.thanks.getDistance(DistanceUnit.CM));
-            telemetry.addData("hasRing", boWei.hasRing(boWei.thanks.getDistance(DistanceUnit.CM)));
+            //telemetry.addData("Distance:", boWei.Dora.getDistance(DistanceUnit.CM));
+            //telemetry.addData("hasRing", boWei.hasRing(boWei.thanks.getDistance(DistanceUnit.CM)));
+            telemetry.addData("rings", ringsShot);
+            telemetry.addData("hasRing", counter);
+            telemetry.addData("alpha", boWei.thanks.alpha());
+            //telemetry.addData("red",boWei.thanks.red());
+            //telemetry.addData("blue", boWei.thanks.blue());
+            //telemetry.addData("green",boWei.thanks.green());
             if (gamepad1.x && !x1Pressed){
                 flip=!flip;
                 if(flip){
@@ -423,7 +456,7 @@ public class drive extends LinearOpMode{
             telemetry.addData("Diff:", (boWei.location.positionLeft + boWei.location.forwardEncoderToRadian *  angle) + (boWei.location.positionRight - boWei.location.forwardEncoderToRadian * -angle));
             telemetry.addData("Distance:", Math.hypot(boWei.redGoal.x-boWei.getX(), boWei.redGoal.y-boWei.getY()));
             telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
-            telemetry.addData("rings", ringsShot);
+            //telemetry.addData("rings", ringsShot);
             telemetry.addData("distance based shoot?: ", distanceBasedShoot);
             telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
             telemetry.addData("tick/s", boWei.launch.getVelocity());
