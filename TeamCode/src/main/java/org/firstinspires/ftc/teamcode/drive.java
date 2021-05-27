@@ -233,6 +233,15 @@ public class drive extends LinearOpMode{
             }
             counter = hasRing;
 */
+            boolean hasRing = false;
+            if (boWei.hasRingT()){
+                hasRing = true;
+            }
+            if (!hasRing && counter){
+                ringsShot++;
+            }
+            counter = hasRing;
+
             if (boWei.thanks.alpha() >6000){
                 //counter = true;
                 boWei.location.setX(36);

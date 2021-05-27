@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorBNO055IMU;
@@ -55,6 +56,7 @@ public class robot {
     Servo grabber, flippyFlip;
     DcMotor upwards;
     //DistanceSensor Dora;
+    TouchSensor work;
     ColorSensor thanks;
     Position location;
     OpenCvWebcam cam;
@@ -84,6 +86,7 @@ public class robot {
         //Dora = hardwareMap.get(DistanceSensor.class, "Dora");
         thanks = hardwareMap.get(ColorSensor.class, "thanks");
         //grabArm = hardwareMap.get(DcMotor.class, "grabArm");
+        work = hardwareMap.get(TouchSensor.class, "work");
         driveTrain = new DcMotor[]{leftFront, leftBack, rightBack, rightFront};
 
 
@@ -183,7 +186,9 @@ public class robot {
         return false;
     }
 
-
+    public boolean hasRingT(){
+        return work.isPressed();
+    }
     public boolean hasRingC(){
         if (thanks.red() > thanks.blue()){
             return true;
