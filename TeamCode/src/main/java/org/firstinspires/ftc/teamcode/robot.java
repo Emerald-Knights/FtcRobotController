@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -58,6 +60,7 @@ public class robot {
     //DistanceSensor Dora;
     TouchSensor work;
     ColorSensor thanks;
+    ColorSensor name;
     Position location;
     OpenCvWebcam cam;
 
@@ -75,7 +78,7 @@ public class robot {
     final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     final String LABEL_FIRST_ELEMENT = "Quad";
     final String LABEL_SECOND_ELEMENT = "Single";
-
+//p:1.21, i:.121, d:0, f:12.1
     public void init (HardwareMap hardwareMap, LinearOpMode linearOpMode){
         launch = (DcMotorEx) hardwareMap.get(DcMotor.class, "launch");
         spin = hardwareMap.get(DcMotor.class,"spin");
@@ -85,6 +88,8 @@ public class robot {
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
         //Dora = hardwareMap.get(DistanceSensor.class, "Dora");
         thanks = hardwareMap.get(ColorSensor.class, "thanks");
+        name = hardwareMap.get(ColorSensor.class, "name");
+
         //grabArm = hardwareMap.get(DcMotor.class, "grabArm");
         work = hardwareMap.get(TouchSensor.class, "work");
         driveTrain = new DcMotor[]{leftFront, leftBack, rightBack, rightFront};
@@ -94,6 +99,7 @@ public class robot {
         //rightLift=hardwareMap.get(Servo.class, "rightLift");
         grabber = hardwareMap.get(Servo.class, "grabber");
         flippyFlip = hardwareMap.get(Servo.class, "flippyFlip");
+
 
         leftOdo= hardwareMap.get(DcMotor.class, "upwards");
         rightOdo = hardwareMap.get(DcMotor.class, "leftFront");
@@ -117,8 +123,8 @@ public class robot {
         angle = imu.getAngularOrientation();
 
         PIDFCoefficients launchPID= launch.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        launchPID.p=3;
-        launchPID.d=2;
+        launchPID.p=9;
+        launchPID.d=3;
 
         for(DcMotor pod: odo){
             pod.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -195,6 +201,12 @@ public class robot {
         }
         return false;
     }
+    public boolean hasRingC2(){
+        if (name.red() > name.blue()){
+            return true;
+        }
+        return false;
+    }
 
 
     public double getRate(){
@@ -215,7 +227,7 @@ public class robot {
     }
 
     public void upward(){
-        upwards.setPower(-0.8);
+        upwards.setPower(-0.7);
     }
     public void collect(){
         spin.setPower(-0.8);
@@ -413,7 +425,7 @@ public class robot {
         double turnAngle=angleWrap(endAngle-getHeading()); //amount u want to turn
         //double turnPower=turnAngle*speed;
         double turnPower=0;
-        if(Math.abs(turnAngle)>.01){
+        if(Math.abs(turnAngle)> .02){
             turnPower= -turnAngle/Math.abs(turnAngle)*( Math.abs(turnAngle)/Math.PI/2.0+ .3);
         }
 
@@ -501,6 +513,16 @@ public class robot {
             linearOpMode.telemetry.update();
 
  */
+            linearOpMode.telemetry.addData("Position0", ("("+round1000(getX())+", "+round1000( getY() ) + ", " + round1000(getHeading())+")"));
+            linearOpMode.telemetry.update();
+            FtcDashboard dashboard = FtcDashboard.getInstance();
+
+            TelemetryPacket packet = new TelemetryPacket();
+            packet.fieldOverlay().setFill("Green").setStrokeWidth(1).setStroke("goldenrod").fillCircle(getX(), getY(), 5);
+            //packet.put("velocity", boWei.launch.getVelocity(AngleUnit.RADIANS));
+            //packet.put("rate", rate);
+            //packet.put("want rate", 8.6);
+            dashboard.sendTelemetryPacket(packet);
             try{
                 Thread.sleep(10);
             }
@@ -529,7 +551,7 @@ public class robot {
     double kd=0;
 
     public void turn(double endAngle){
-        double integral = 0;
+        double integral = 3;
         double newTime = runtime.seconds();
         double oldTime = 0;
         double error = angleWrap(imu.getAngularOrientation().firstAngle - endAngle);
@@ -552,7 +574,7 @@ public class robot {
 
         double output = kp* error + kd* slope + ki * integral +.3;
 
-        double[] powers= drive(0,0,output);
+        double[] powers= drive(0,0, output);
 
         for(int i=0; i<4; i++){
             driveTrain[i].setPower(powers[i]);
@@ -568,6 +590,7 @@ public class robot {
             driveTrain[i].setPower(0);
         }
     }
+
     public static void setEndPosition(CurvePoint end){
         endX=end.x;
         endY=end.y;

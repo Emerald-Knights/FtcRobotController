@@ -12,7 +12,7 @@ public class stuff extends LinearOpMode{
     robot boWei = new robot();
     @Override
     public void runOpMode(){
-        boWei.init(hardwareMap, this);
+        boWei.init(hardwareMap,this);
         waitForStart();
         boWei.move(3000, 1);
     }

@@ -28,7 +28,7 @@ public class drive extends LinearOpMode{
         //float current = 0;
         //float currentVex = 0;
         //boWei.location.setPosition(robot.endX, robot.endY, robot.endAngle);
-        //boWei.location.setPosition(0, -36, 0); //0,0,0
+        //boWei.location.setPosition(0, -36, 0); 0,0,0
         boWei.location.setPosition(robot.endX, robot.endY, robot.endAngle);
 
         waitForStart();
@@ -76,6 +76,7 @@ public class drive extends LinearOpMode{
         boolean aimLock=false;
         boolean y1Pressed = false;
         boolean x1Pressed = false;
+        boolean x2Pressed = false;
 
         boolean flip=false;
         boolean grab = false;
@@ -195,11 +196,11 @@ public class drive extends LinearOpMode{
             if (gamepad1.y && !y1Pressed){
                 grab=!grab;
                 if(grab){
-                    boWei.grabber.setPosition(0.2);
+                    boWei.grabber.setPosition(0.16);
 
                 }
                 else{
-                    boWei.grabber.setPosition(0.8);
+                    boWei.grabber.setPosition(0.6);
                 }
 
                 y1Pressed = true;
@@ -234,11 +235,15 @@ public class drive extends LinearOpMode{
             counter = hasRing;
 */
             boolean hasRing = false;
-            if (boWei.hasRingT()){
+            boolean temp = false;
+            if (boWei.name.alpha() > 200){
                 hasRing = true;
             }
             if (!hasRing && counter){
-                ringsShot++;
+                //if (boWei.launch.getVelocity() < 6){
+                    ringsShot++;
+               // }
+                //ringsShot++;
             }
             counter = hasRing;
 
@@ -254,21 +259,25 @@ public class drive extends LinearOpMode{
             //telemetry.addData("hasRing", boWei.hasRing(boWei.thanks.getDistance(DistanceUnit.CM)));
             telemetry.addData("rings", ringsShot);
             telemetry.addData("hasRing", counter);
-            telemetry.addData("alpha", boWei.thanks.alpha());
-            //telemetry.addData("red",boWei.thanks.red());
-            //telemetry.addData("blue", boWei.thanks.blue());
-            //telemetry.addData("green",boWei.thanks.green());
+            telemetry.addData("alpha", boWei.name.alpha());
+            telemetry.addData("red",boWei.name.red());
+            telemetry.addData("blue", boWei.name.blue());
+            telemetry.addData("green",boWei.name.green());
             if (gamepad1.x && !x1Pressed){
                 flip=!flip;
                 if(flip){
                     boWei.flippyFlip.setPosition(0.5);
                 }
                 else{
-                    boWei.flippyFlip.setPosition(0.8);
+                    boWei.flippyFlip.setPosition(0.93);
 
                 }
                 x1Pressed = true;
             }
+
+            telemetry.addData("flippyFlip Position", boWei.flippyFlip.getPosition());
+            telemetry.addData("fPort", boWei.flippyFlip.getPortNumber());
+            telemetry.addData("GPort", boWei.grabber.getPortNumber());
             if (!gamepad1.x){
                 x1Pressed = false;
             }
