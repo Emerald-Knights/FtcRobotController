@@ -17,15 +17,20 @@ import static org.firstinspires.ftc.teamcode.utilities.round1000;
 public class maybe extends LinearOpMode {
     robot boWei = new robot();
     ElapsedTime timer = new ElapsedTime();
+
     @Override
     public void runOpMode(){
         boWei.init(hardwareMap,this);
         boWei.initOpenCV();
+
         int ringsShot = 0;
         FtcDashboard dashboard = FtcDashboard.getInstance();
+
         int cases;
         boolean counter = false;
+
         boWei.location.setPosition(-62, -40, Math.PI);
+
         List<CurvePoint> goLeft = new ArrayList<>();
         //List<CurvePoint> goMid = new ArrayList<>();
         //List<CurvePoint> goRight = new ArrayList<>();
@@ -33,6 +38,8 @@ public class maybe extends LinearOpMode {
         List<CurvePoint> goGoal = new ArrayList<>();
         List<CurvePoint> toPark = new ArrayList<>();
         List<CurvePoint> goShoot = new ArrayList<>();
+
+
         goLeft.add(new CurvePoint(boWei.getPosition()));
         goLeft.add(new CurvePoint(-37,-18, Math.PI));
         //goLeft.add(new CurvePoint(-37,-24, Math.PI)); add to avoid hitting ring stack
@@ -52,18 +59,22 @@ public class maybe extends LinearOpMode {
 
         //toPark.add(new CurvePoint(4,-12, Math.PI));
         toPark.add(new CurvePoint(8, -24, Math.PI));
+
         waitForStart();
 
 
         sleep(3000);
 
         cases=boWei.pipeline.getRings();
-        telemetry.addData("rings0", cases);
+        telemetry.addData("rings:", cases);
+
         boWei.grabber.setPosition(0.16);
         boWei.flippyFlip.setPosition(.88);
+
         //telemetry.addData("Position", boWei.getPosition());
         //telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
         telemetry.update();
+
         if (cases == 1){
             goGoal.add(new CurvePoint(20, -40, Math.PI)); // 40, 15
         }

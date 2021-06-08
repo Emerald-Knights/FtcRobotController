@@ -236,7 +236,18 @@ public class robot {
         spin.setPower(0.8);
 
     }
-
+    public void grab(){
+        grabber.setPosition(0.16);
+    }
+    public void release(){
+        grabber.setPosition(0.6);
+    }
+    public void flip(){
+        flippyFlip.setPosition(.88);
+    }
+    public void unflip(){
+        flippyFlip.setPosition(0.93);
+    }
 
 /*
     public void move(int ticks, int direction) {
@@ -354,7 +365,6 @@ public class robot {
         m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
 
     public void turning(double radians){
         double angle = imu.getAngularOrientation().firstAngle;
@@ -523,10 +533,9 @@ public class robot {
             //packet.put("rate", rate);
             //packet.put("want rate", 8.6);
             dashboard.sendTelemetryPacket(packet);
-            try{
-                Thread.sleep(10);
-            }
-            catch(Exception e){}
+
+            linearOpMode.sleep(10);
+
         }
 
         for(int i=0; i<driveTrain.length; i++){
@@ -589,6 +598,27 @@ public class robot {
         for(int i=0; i<4; i++){
             driveTrain[i].setPower(0);
         }
+    }
+
+    public void turnTo(double endAngle, double power){
+        double angleDiff=angleWrap(getHeading()-endAngle);
+        while(Math.abs(angleDiff)>.05 && linearOpMode.opModeIsActive()){
+            int magnitude = (int) (angleDiff/Math.abs(angleDiff));
+
+            leftFront.setPower(-magnitude*power);
+            leftBack.setPower(-magnitude*power);
+            rightBack.setPower(magnitude*power);
+            rightFront.setPower(magnitude*power);
+
+            angleDiff=angleWrap(getHeading()-endAngle);
+
+
+        }
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+
     }
 
     public static void setEndPosition(CurvePoint end){

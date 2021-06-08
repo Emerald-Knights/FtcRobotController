@@ -96,8 +96,6 @@ public class drive extends LinearOpMode{
 
         while(opModeIsActive()){
 
-
-
             /*
             if(gamepad2.x && !xPressed){
                 if (!moving){
@@ -196,11 +194,10 @@ public class drive extends LinearOpMode{
             if (gamepad1.y && !y1Pressed){
                 grab=!grab;
                 if(grab){
-                    boWei.grabber.setPosition(0.16);
-
+                    boWei.grab();
                 }
                 else{
-                    boWei.grabber.setPosition(0.6);
+                    boWei.release();
                 }
 
                 y1Pressed = true;
@@ -263,6 +260,7 @@ public class drive extends LinearOpMode{
             telemetry.addData("red",boWei.name.red());
             telemetry.addData("blue", boWei.name.blue());
             telemetry.addData("green",boWei.name.green());
+
             if (gamepad1.x && !x1Pressed){
                 flip=!flip;
                 if(flip){
