@@ -23,6 +23,8 @@ public class ringPipeline extends OpenCvPipeline{
     Point crosshairPoint = new Point(xc, yc);
     int crosshairLength = 10;
     Rect crosshair = new Rect(new Point(xc-crosshairLength/2, yc-crosshairLength/2), new Point(xc + crosshairLength/2, yc + crosshairLength/2));
+    Rect more = new Rect(new Point(10,10), new Point(50,50));
+    Rect more1 = new Rect(new Point(-10,-10), new Point(-50,-50));
     int rings = 0;
     double rRatio;
 
@@ -31,11 +33,9 @@ public class ringPipeline extends OpenCvPipeline{
     public Mat processFrame(Mat input) {
         Core.flip(input, input, -1);
         //input is the image that the phone camera sees, with RGB values for each pixel
-
         //just making points for learning purposes
         //Point xy = new Point(42, 3);
         //Point xx = new Point(114, 30);
-
         //Mat are objects, they are basically 2d arrays but they represent images
         Mat thing = new Mat(); //a new temporary mat (image)
 
@@ -63,7 +63,7 @@ public class ringPipeline extends OpenCvPipeline{
         //checks what range of values pixels are in. If they are outside of 160 to 220 for the Cr channel (see previous line), they are removed.
         //displaying "thing" now would show white pixels for all pixels that are red/ orange, while everything else would be black
         //Core.inRange(thing, new Scalar(0, 160, 40), new Scalar(255, 180, 100), thing); //75
-        Core.inRange(thing, new Scalar(0, 140, 50), new Scalar(255, 200, 130), thing); //cb:100
+        Core.inRange(thing, new Scalar(200, 140, 50), new Scalar(255, 190, 100), thing); //cb:100
         //Core.bitwise_not(thing, thing);
 
         //Imgproc.threshold(thing, thing, 160, 180, Imgproc.THRESH_BINARY); //220
@@ -81,6 +81,9 @@ public class ringPipeline extends OpenCvPipeline{
         Rect max = new Rect(new Point(0,0), new Point(1,1));
 
         Imgproc.rectangle(input, crosshair, new Scalar(4, 233, 78), 3, 8);
+        Imgproc.rectangle(input, more1, new Scalar(255, 200, 160), 3, 8);
+        Imgproc.rectangle(input, more, new Scalar(255, 175, 66), 3, 8);
+
         for(MatOfPoint point: matList){
             //xc, yc for crosshair x and y coordinate
             Rect drawThing = Imgproc.boundingRect(point);

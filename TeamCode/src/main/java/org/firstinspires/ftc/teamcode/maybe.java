@@ -34,8 +34,9 @@ public class maybe extends LinearOpMode {
         List<CurvePoint> toPark = new ArrayList<>();
         List<CurvePoint> goShoot = new ArrayList<>();
         goLeft.add(new CurvePoint(boWei.getPosition()));
+        goLeft.add(new CurvePoint(-37,-18, Math.PI));
         //goLeft.add(new CurvePoint(-37,-24, Math.PI)); add to avoid hitting ring stack
-        goLeft.add(new CurvePoint(-1,-20,-2.74));
+        goLeft.add(new CurvePoint(-1,-20, -2.6));
 
         goShoot.add(new CurvePoint(0,-18,Math.PI));
         goShoot.add(new CurvePoint(0, -36, Math.PI));
@@ -84,13 +85,13 @@ public class maybe extends LinearOpMode {
         //packet.put("want rate", 8.6);
         dashboard.sendTelemetryPacket(packet);
 
-        boWei.followCurveSync(goLeft, 8, 0.4,5);
+        boWei.followCurveSync(goLeft, 8, 0.6,5);
 
         int a = 1;
         telemetry.addData("stop:", a);
 
-        if (boWei.getHeading() > -2.66){
-            while (Math.abs(2.66 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
+        if (boWei.getHeading() > -2.6){
+            while (Math.abs(2.6 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
                 boWei.rightBack.setPower(-0.3);
                 boWei.rightFront.setPower(-0.3);
                 boWei.leftBack.setPower(0.3);
@@ -101,8 +102,8 @@ public class maybe extends LinearOpMode {
             boWei.leftBack.setPower(0);
             boWei.leftFront.setPower(0);
         }
-        else if (boWei.getHeading() < -2.66){
-            while (Math.abs(2.66 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
+        else if (boWei.getHeading() < -2.6){
+            while (Math.abs(2.6 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
                 boWei.rightBack.setPower(0.3);
                 boWei.rightFront.setPower(0.3);
                 boWei.leftBack.setPower(-0.3);
@@ -134,7 +135,7 @@ public class maybe extends LinearOpMode {
         }
         boWei.spin.setPower(0);
         boWei.upwards.setPower(0);
-        while (Math.abs(2.72 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
+        while (Math.abs(2.7 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
             boWei.rightBack.setPower(-0.3);
             boWei.rightFront.setPower(-0.3);
             boWei.leftBack.setPower(0.3);
@@ -164,7 +165,7 @@ public class maybe extends LinearOpMode {
         }
         boWei.upwards.setPower(0);
         boWei.spin.setPower(0);
-        while (Math.abs(2.81 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
+        while (Math.abs(2.8 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
             boWei.rightBack.setPower(-0.3);
             boWei.rightFront.setPower(-0.3);
             boWei.leftBack.setPower(0.3);
@@ -236,6 +237,8 @@ public class maybe extends LinearOpMode {
         boWei.leftBack.setPower(0);
         boWei.leftFront.setPower(0);
         //robot.setEndPosition(boWei.getPosition());
+
+        boWei.cam.closeCameraDevice();
     }
 
 }

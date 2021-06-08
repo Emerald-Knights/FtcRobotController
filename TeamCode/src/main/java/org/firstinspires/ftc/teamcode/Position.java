@@ -19,10 +19,10 @@ public class Position extends Thread{
     LinearOpMode opMode;
 
     //constants to convert encoders to distance moved
-    private static double encoderToInch=1755; //will need to tune 1682
-    private static double horizEncoderToInch=1663; //will need to tune
-    final double horizEncoderToRadian= 889;//1697
-    final double forwardEncoderToRadian = 1000; //3019
+    private static double encoderToInch=1595; //will need to tune 1682
+    private static double horizEncoderToInch=1583; //will need to tune
+    final double horizEncoderToRadian= 6200;//1697
+    final double forwardEncoderToRadian = 499; //3019
     //current encoder position/ angle position
     double positionLeft;
     double positionRight;
