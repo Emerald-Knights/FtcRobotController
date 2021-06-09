@@ -55,6 +55,7 @@ public class robot {
     TFObjectDetector tfod;
     Servo leftLift;
     Servo rightLift;
+    Servo stiff;
     Servo grabber, flippyFlip;
     DcMotor upwards;
     //DistanceSensor Dora;
@@ -99,7 +100,7 @@ public class robot {
         //rightLift=hardwareMap.get(Servo.class, "rightLift");
         grabber = hardwareMap.get(Servo.class, "grabber");
         flippyFlip = hardwareMap.get(Servo.class, "flippyFlip");
-
+        stiff = hardwareMap.get(Servo.class, "stiff");
 
         leftOdo= hardwareMap.get(DcMotor.class, "upwards");
         rightOdo = hardwareMap.get(DcMotor.class, "leftFront");
@@ -243,11 +244,21 @@ public class robot {
         grabber.setPosition(0.6);
     }
     public void flip(){
-        flippyFlip.setPosition(.88);
+        flippyFlip.setPosition(0.5);
     }
     public void unflip(){
         flippyFlip.setPosition(0.93);
     }
+    public void autonUnflip(){
+        flippyFlip.setPosition(0.88);
+    }
+    public void goStiff(){
+        stiff.setPosition(0.22);
+    }
+    public void flipBack(){
+        stiff.setPosition(1);
+    }
+
 
 /*
     public void move(int ticks, int direction) {
@@ -611,8 +622,6 @@ public class robot {
             rightFront.setPower(magnitude*power);
 
             angleDiff=angleWrap(getHeading()-endAngle);
-
-
         }
         leftFront.setPower(0);
         leftBack.setPower(0);

@@ -31,7 +31,7 @@ public class evenMore extends LinearOpMode {
         List<CurvePoint> toPark = new ArrayList<>();
 
         goLeft.add(new CurvePoint(boWei.getPosition()));
-        //goLeft.add(new CurvePoint(-36,-16, Math.PI));
+        goLeft.add(new CurvePoint(-36,-16, Math.PI));
         goLeft.add(new CurvePoint(-1,6,-2.74));
         /*
         goMid.add(new CurvePoint(boWei.getPosition()));

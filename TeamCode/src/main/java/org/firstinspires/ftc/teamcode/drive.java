@@ -57,7 +57,7 @@ public class drive extends LinearOpMode{
         double toggle = 1;
         boolean lbumpPressed=false;
         boolean yIsPressed=false;
-
+        boolean dPressed = false;
         int ringsShot = 0;
         boolean counter = false;
 
@@ -67,7 +67,7 @@ public class drive extends LinearOpMode{
         double oldAngle = 0;
         boolean bIsPressed=false;
         boolean collecting=false;
-
+        boolean dpad = false;
         boolean fieldOriented= false;
 
         boolean prevRStick=false;
@@ -205,7 +205,21 @@ public class drive extends LinearOpMode{
             if (!gamepad1.y){
                 y1Pressed = false;
             }
+            if (gamepad1.dpad_down && !dPressed) {
+                dpad =!dpad;
+                if (dpad){
+                    boWei.goStiff();
+                }
+                else{
+                    boWei.flipBack();
+                }
+                dPressed = true;
+            }
+            if (!gamepad1.dpad_down){
+                dPressed = false;
+            }
 
+            telemetry.addData("stiff", boWei.stiff.getPosition());
             /*if (boWei.thanks.red() > boWei.thanks.blue()){
                 counter = true;
             }
@@ -264,10 +278,10 @@ public class drive extends LinearOpMode{
             if (gamepad1.x && !x1Pressed){
                 flip=!flip;
                 if(flip){
-                    boWei.flippyFlip.setPosition(0.5);
+                    boWei.flip();
                 }
                 else{
-                    boWei.flippyFlip.setPosition(0.93);
+                    boWei.unflip();
 
                 }
                 x1Pressed = true;

@@ -25,58 +25,47 @@ public class woodlepoodle extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         int cases;
         boolean counter = false;
-        int side = 1;
         boWei.location.setPosition(-62, -40, Math.PI);
-        //boWei.location.setPosition(-62, -40 * side, Math.PI);
 
         List<CurvePoint> goLeft = new ArrayList<>();
-        //List<CurvePoint> goMid = new ArrayList<>();
-        //List<CurvePoint> goRight = new ArrayList<>();
         List<CurvePoint> goGoal = new ArrayList<>();
         List<CurvePoint> toPark = new ArrayList<>();
 
         goLeft.add(new CurvePoint(boWei.getPosition()));
         goLeft.add(new CurvePoint(-37,-16, Math.PI)); //add to avoid hitting ring stack
         goLeft.add(new CurvePoint(-1,-20, -2.6));
-        /*
-        goMid.add(new CurvePoint(boWei.getPosition()));
-        goMid.add(new CurvePoint(-1.031,-6,-2.842));
 
-        goRight.add(new CurvePoint(boWei.getPosition()));
-        goRight.add(new CurvePoint(-1.807,-5.686,-2.938));
-
-         */
         goGoal.add(new CurvePoint(12,-30, Math.PI));
 
         //toPark.add(new CurvePoint(-12, -24, Math.PI));
         toPark.add(new CurvePoint(4,-12, Math.PI));
         toPark.add(new CurvePoint(8, -24, Math.PI));
+        boWei.flipBack();
+
         waitForStart();
 
-
+        boWei.goStiff();
         sleep(3000);
 
         cases=boWei.pipeline.getRings();
         telemetry.addData("rings0", cases);
-        boWei.grabber.setPosition(0.16);
-        boWei.flippyFlip.setPosition(.88);
-        //telemetry.addData("Position", boWei.getPosition());
-        //telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
+        boWei.grab();
+        //boWei.grabber.setPosition(0.16);
+        boWei.autonUnflip();
+        //boWei.flippyFlip.setPosition(.88);
         telemetry.update();
         if (cases == 1){
             goGoal.add(new CurvePoint(20, -40, Math.PI)); // 40, 15
         }
         else if (cases == 0){
-            goGoal.add(new CurvePoint(24, -48, Math.PI)); //12,-40 could change angle to Math.PI/2 facing sideways
+            goGoal.add(new CurvePoint(44, -24, Math.PI)); //12,-40 could change angle to Math.PI/2 facing sideways
         }
         else if (cases == 4){
-            goGoal.add(new CurvePoint(54,-44, Math.PI)); //15,-48
-            //telemetry.addData("4",4);
+            goGoal.add(new CurvePoint(60,-44, Math.PI)); //15,-48
         }
-        //40, 15
 
         //telemetry.addData("position",boWei.getPosition());
-        boWei.launch.setVelocity(8.0, AngleUnit.RADIANS);
+        boWei.launch.setVelocity(7.6, AngleUnit.RADIANS);
         TelemetryPacket packet = new TelemetryPacket();
         packet.fieldOverlay().setFill("Green").setStrokeWidth(1).setStroke("goldenrod").fillCircle(boWei.getX(), boWei.getY(), 5);
         //packet.put("velocity", boWei.launch.getVelocity(AngleUnit.RADIANS));
@@ -88,7 +77,7 @@ public class woodlepoodle extends LinearOpMode {
 
         int a = 1;
         telemetry.addData("stop:", a);
-
+        /*
         if (boWei.getHeading() > -2.6){
             while (Math.abs(2.6 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
                 boWei.rightBack.setPower(-0.3);
@@ -113,6 +102,8 @@ public class woodlepoodle extends LinearOpMode {
             boWei.leftBack.setPower(0);
             boWei.leftFront.setPower(0);
         }
+        */
+        boWei.turnTo(-2.6, 0.3);
         timer.reset();
         while (ringsShot == 0 && opModeIsActive() && timer.seconds() < 5){
             telemetry.addData("rings1", ringsShot);
@@ -144,6 +135,7 @@ public class woodlepoodle extends LinearOpMode {
         boWei.rightFront.setPower(0);
         boWei.leftBack.setPower(0);
         boWei.leftFront.setPower(0);
+        //boWei.turnTo(-2.7,0.3);
         //boWei.moveToPosition(boWei.getX(),boWei.getY(),0.4,-2.842);
         sleep(1500);
         timer.reset();
@@ -174,6 +166,7 @@ public class woodlepoodle extends LinearOpMode {
         boWei.rightFront.setPower(0);
         boWei.leftBack.setPower(0);
         boWei.leftFront.setPower(0);
+        //boWei.turnTo(-2.8,0.3);
         sleep(1500);
         timer.reset();
         while (ringsShot == 2 && opModeIsActive() && timer.seconds() < 5){
@@ -200,10 +193,11 @@ public class woodlepoodle extends LinearOpMode {
         telemetry.addData("Position3", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
         telemetry.update();
         boWei.followCurveSync(goGoal,8, 0.55, 10);
-        boWei.grabber.setPosition(0.6);
+        boWei.release();
         sleep(500);
-        boWei.flippyFlip.setPosition(0.5);
-        sleep(1000);
+        boWei.flip();
+        //boWei.flippyFlip.setPosition(0.5);
+        sleep(500);
         toPark.add(0, boWei.getPosition());
         boWei.followCurveSync(toPark,8,0.5,5);
         boWei.rightBack.setPower(0);
