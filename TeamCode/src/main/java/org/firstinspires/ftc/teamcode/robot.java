@@ -124,8 +124,10 @@ public class robot {
         angle = imu.getAngularOrientation();
 
         PIDFCoefficients launchPID= launch.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        launchPID.p=9;
-        launchPID.d=3;
+        launchPID.p=1.21;
+        launchPID.d=0;
+        launchPID.i=.121;
+        launchPID.f=12.1;
 
         for(DcMotor pod: odo){
             pod.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -244,7 +246,7 @@ public class robot {
         grabber.setPosition(0.6);
     }
     public void flip(){
-        flippyFlip.setPosition(0.5);
+        flippyFlip.setPosition(0.3);
     }
     public void unflip(){
         flippyFlip.setPosition(0.93);

@@ -407,22 +407,23 @@ public class drive extends LinearOpMode{
             if(!lbump){
                 lbumpPressed=false;
             }
-
+            double slope=0;
             if(aimLock){
-                if(Math.abs(angleDiff)>.06){
-                    double slope= (angleDiff-prevAngleDiff)/(curTime-prevTime);
+                if(Math.abs(angleDiff)>.08){
+                    slope= (angleDiff-prevAngleDiff)/(curTime-prevTime);
 
                     integral+=(prevAngleDiff+angleDiff)/2.0*(curTime-prevTime);
 
                     //rx=angleDiff*boWei.kp + integral*boWei.ki + slope*boWei.kd+.3;
                     //rx= angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
                     
-                    rx=angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/12.0 + .3);
+                    rx=angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/12.0 + .3)+slope*.15;
                 }
                 else{
                     rx=0;
                 }
             }
+            telemetry.addData("slope", slope);
 
             if(gamepad1.a && !a1Pressed){
                 boWei.location.setPosition(0, -36, boWei.getHeading());
