@@ -221,7 +221,8 @@ public class robot {
             //return 9.0;
         }
 
-        return .020933333333333 * (distance) + 6.590;
+        //return .020933333333333 * (distance) + 6.590;
+        return .0133495146*distance + 7.840776699;
     }
 
     public double getAngleDiff(){

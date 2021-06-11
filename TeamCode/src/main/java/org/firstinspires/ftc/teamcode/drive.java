@@ -417,7 +417,10 @@ public class drive extends LinearOpMode{
                     //rx=angleDiff*boWei.kp + integral*boWei.ki + slope*boWei.kd+.3;
                     //rx= angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
                     
-                    rx=angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/12.0 + .3)+slope*.15;
+                    rx=angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .2)+slope*.2 + integral/5; // 1/3, -.1
+                    if(Math.abs(rx)>.8){
+                        rx=rx/Math.abs(rx)*.8;
+                    }
                 }
                 else{
                     rx=0;
@@ -503,6 +506,7 @@ public class drive extends LinearOpMode{
 
             TelemetryPacket packet = new TelemetryPacket();
             packet.fieldOverlay().setFill("Green").setStrokeWidth(1).setStroke("goldenrod").fillCircle(boWei.getX(), boWei.getY(), 5);
+            packet.put("anglediff", angleDiff);
             packet.put("velocity", boWei.launch.getVelocity(AngleUnit.RADIANS));
             packet.put("rate", rate);
             //packet.put("want rate", 8.6);
