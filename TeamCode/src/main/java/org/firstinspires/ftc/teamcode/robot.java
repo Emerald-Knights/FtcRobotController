@@ -614,14 +614,14 @@ public class robot {
     }
 
     public void turnTo(double endAngle, double power){
-        double angleDiff=angleWrap(getHeading()-endAngle);
+        double angleDiff=angleWrap(getHeading()- endAngle);
         while(Math.abs(angleDiff)>.05 && linearOpMode.opModeIsActive()){
             int magnitude = (int) (angleDiff/Math.abs(angleDiff));
 
-            leftFront.setPower(-magnitude*power);
-            leftBack.setPower(-magnitude*power);
-            rightBack.setPower(magnitude*power);
-            rightFront.setPower(magnitude*power);
+            leftFront.setPower(magnitude*power);
+            leftBack.setPower(magnitude*power);
+            rightBack.setPower(-magnitude*power);
+            rightFront.setPower(-magnitude*power);
 
             angleDiff=angleWrap(getHeading()-endAngle);
         }

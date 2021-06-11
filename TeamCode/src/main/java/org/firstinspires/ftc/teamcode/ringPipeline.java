@@ -63,7 +63,7 @@ public class ringPipeline extends OpenCvPipeline{
         //checks what range of values pixels are in. If they are outside of 160 to 220 for the Cr channel (see previous line), they are removed.
         //displaying "thing" now would show white pixels for all pixels that are red/ orange, while everything else would be black
         //Core.inRange(thing, new Scalar(0, 160, 40), new Scalar(255, 180, 100), thing); //75
-        Core.inRange(thing, new Scalar(200, 140, 50), new Scalar(255, 190, 100), thing); //cb:100
+        Core.inRange(thing, new Scalar(170, 140, 50), new Scalar(255, 190, 100), thing); //cb:100
         //Core.bitwise_not(thing, thing);
 
         //Imgproc.threshold(thing, thing, 160, 180, Imgproc.THRESH_BINARY); //220

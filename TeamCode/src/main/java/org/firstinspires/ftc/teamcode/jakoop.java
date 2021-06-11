@@ -13,8 +13,8 @@ import java.util.List;
 
 import static org.firstinspires.ftc.teamcode.utilities.round1000;
 
-@Autonomous(name = "topRedRight", group = "hmmm7")
-public class topAuton extends LinearOpMode {
+@Autonomous(name = "topRedLeft", group = "mmm7?")
+public class jakoop extends LinearOpMode {
     robot boWei = new robot();
     ElapsedTime timer = new ElapsedTime();
     @Override
@@ -33,7 +33,7 @@ public class topAuton extends LinearOpMode {
         List<CurvePoint> toPark = new ArrayList<>();
 
         goMid.add(new CurvePoint(boWei.getPosition()));
-        goMid.add(new CurvePoint(-24,-59, Math.PI));
+        goMid.add(new CurvePoint(-24,-18, Math.PI));
         goMid.add(new CurvePoint(0,-36,Math.PI));
         //goLeft.add(new CurvePoint(-36,-16, Math.PI));
         goGoal.add(new CurvePoint(12,-30, Math.PI));
@@ -67,7 +67,7 @@ public class topAuton extends LinearOpMode {
             goGoal.add(new CurvePoint(20, -40, Math.PI)); // 40, 15
         }
         else if (cases == 0){
-            goGoal.add(new CurvePoint(42, -24, Math.PI)); //12,-40 could change angle to Math.PI/2 facing sideways
+            goGoal.add(new CurvePoint(44, -24, Math.PI)); //12,-40 could change angle to Math.PI/2 facing sideways
         }
         else if (cases == 4){
             goGoal.add(new CurvePoint(60,-44, Math.PI)); //15,-48
@@ -75,24 +75,23 @@ public class topAuton extends LinearOpMode {
 
         //40, 15
         boWei.followCurveSync(goMid, 8, 0.5,5);
-//        while (Math.abs(2.76 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
-//            boWei.rightBack.setPower(0.3);
-//            boWei.rightFront.setPower(0.3);
-//            boWei.leftBack.setPower(-0.3);
-//            boWei.leftFront.setPower(-0.3);
-//        }
-//        boWei.rightBack.setPower(0);
-//        boWei.rightFront.setPower(0);
-//        boWei.leftBack.setPower(0);
-//        boWei.leftFront.setPower(0);
-        boWei.turnTo(-2.68, 0.3);
+        while (Math.abs(2.76 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
+            boWei.rightBack.setPower(0.3);
+            boWei.rightFront.setPower(0.3);
+            boWei.leftBack.setPower(-0.3);
+            boWei.leftFront.setPower(-0.3);
+        }
+        boWei.rightBack.setPower(0);
+        boWei.rightFront.setPower(0);
+        boWei.leftBack.setPower(0);
+        boWei.leftFront.setPower(0);
         //telemetry.addData("position",boWei.getPosition());
-        boWei.launch.setVelocity(9, AngleUnit.RADIANS);
+        boWei.launch.setVelocity(8.4, AngleUnit.RADIANS);
         sleep(2000);
         boWei.collect();
         boWei.upward();
         timer.reset();
-        while (ringsShot < 4 && timer.seconds() < 7){
+        while (ringsShot < 3 && timer.seconds() < 7){
             boolean hasRing = false;
             if (boWei.name.alpha() > 200){
                 hasRing = true;
