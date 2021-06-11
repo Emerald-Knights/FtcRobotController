@@ -417,7 +417,7 @@ public class drive extends LinearOpMode{
                     //rx=angleDiff*boWei.kp + integral*boWei.ki + slope*boWei.kd+.3;
                     //rx= angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
                     
-                    rx=angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .2)+slope*.2 + integral/5; // 1/3, -.1
+                    rx=angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .2)+slope*.15; // 1/3, -.1
                     if(Math.abs(rx)>.8){
                         rx=rx/Math.abs(rx)*.8;
                     }
