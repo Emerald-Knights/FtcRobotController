@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -11,6 +12,7 @@ import java.util.List;
 import static org.firstinspires.ftc.teamcode.utilities.angleWrap;
 
 @Autonomous(name="test", group="Lf")
+@Disabled
 public class test extends LinearOpMode {
     robot boWei = new robot();
     @Override

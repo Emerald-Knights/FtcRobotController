@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.opencv.core.Point;
 
 @TeleOp(name="drive2electricBugaloo", group="f")
+@Disabled
 public class Drive2electricBugaloo extends LinearOpMode{
 	robot2Wheel boWei = new robot2Wheel();
 

@@ -21,7 +21,7 @@ import org.opencv.core.Point;
 @TeleOp(name="drive", group="f")
 public class drive extends LinearOpMode{
     robot boWei = new robot();
-
+    vuforiaStuff stuff = new vuforiaStuff(this, boWei);
     @Override
     public void runOpMode(){
         boWei.init(hardwareMap, this);
@@ -30,9 +30,8 @@ public class drive extends LinearOpMode{
         //boWei.location.setPosition(robot.endX, robot.endY, robot.endAngle);
         //boWei.location.setPosition(0, -36, 0); 0,0,0
         boWei.location.setPosition(robot.endX, robot.endY, robot.endAngle);
-
+        stuff.start();
         waitForStart();
-
         boWei.runtime.reset();
 
         double integral =0;
@@ -480,10 +479,10 @@ public class drive extends LinearOpMode{
             oldAngle = boWei.getHeading();
 
 
-            //telemetry.addData("LF", lf);
-            //telemetry.addData("LB", lb);
-            //telemetry.addData("RF", rf);
-            //telemetry.addData("RB", rb);
+            telemetry.addData("LF", lf);
+            telemetry.addData("LB", lb);
+            telemetry.addData("RF", rf);
+            telemetry.addData("RB", rb);
             telemetry.addData("left", -boWei.leftOdo.getCurrentPosition());
             telemetry.addData("right", boWei.rightOdo.getCurrentPosition());
             telemetry.addData("horizontal", boWei.horizontalOdo.getCurrentPosition());

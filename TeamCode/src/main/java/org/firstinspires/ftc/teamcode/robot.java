@@ -217,7 +217,7 @@ public class robot {
         double distance = Math.hypot(redGoal.x-getX(), redGoal.y-getY());
 
         if(Math.abs(distance) < 90){
-            return 8.8;
+            return 9;
             //return 9.0;
         }
 

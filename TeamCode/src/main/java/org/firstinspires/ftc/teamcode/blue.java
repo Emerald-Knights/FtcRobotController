@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Autonomous(name="auton", group = "sus")
+@Disabled
 public class blue extends LinearOpMode {
     robot boWei= new robot();
 

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.utilities.angleWrap;
 
 @TeleOp(name="drive simple", group="f")
+@Disabled
 public class driveSimple extends LinearOpMode {
     robot boWei=new robot();
     boolean fieldOriented=false;

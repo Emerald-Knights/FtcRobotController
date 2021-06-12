@@ -14,7 +14,7 @@ import java.util.List;
 import static org.firstinspires.ftc.teamcode.utilities.round1000;
 
 @Autonomous(name = "topRedLeft", group = "mmm7?")
-public class jakoop extends LinearOpMode {
+public class topRedLeft extends LinearOpMode {
     robot boWei = new robot();
     ElapsedTime timer = new ElapsedTime();
     @Override
@@ -25,7 +25,7 @@ public class jakoop extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         int cases;
         boolean counter = false;
-        boWei.location.setPosition(-62, -40, Math.PI);
+        boWei.location.setPosition(-62, -24, Math.PI);
         List<CurvePoint> goMid = new ArrayList<>();
         //List<CurvePoint> goMid = new ArrayList<>();
         //List<CurvePoint> goRight = new ArrayList<>();
@@ -75,18 +75,19 @@ public class jakoop extends LinearOpMode {
 
         //40, 15
         boWei.followCurveSync(goMid, 8, 0.5,5);
-        while (Math.abs(2.76 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
-            boWei.rightBack.setPower(0.3);
-            boWei.rightFront.setPower(0.3);
-            boWei.leftBack.setPower(-0.3);
-            boWei.leftFront.setPower(-0.3);
-        }
-        boWei.rightBack.setPower(0);
-        boWei.rightFront.setPower(0);
-        boWei.leftBack.setPower(0);
-        boWei.leftFront.setPower(0);
+//        while (Math.abs(2.76 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
+//            boWei.rightBack.setPower(0.3);
+//            boWei.rightFront.setPower(0.3);
+//            boWei.leftBack.setPower(-0.3);
+//            boWei.leftFront.setPower(-0.3);
+//        }
+//        boWei.rightBack.setPower(0);
+//        boWei.rightFront.setPower(0);
+//        boWei.leftBack.setPower(0);
+//        boWei.leftFront.setPower(0);
+        boWei.turnTo(-2.7, 0.3);
         //telemetry.addData("position",boWei.getPosition());
-        boWei.launch.setVelocity(8.4, AngleUnit.RADIANS);
+        boWei.launch.setVelocity(9, AngleUnit.RADIANS);
         sleep(2000);
         boWei.collect();
         boWei.upward();
@@ -113,7 +114,7 @@ public class jakoop extends LinearOpMode {
 
         boWei.followCurveSync(goGoal,8, 0.5, 10);
         boWei.autonUnflip();
-        sleep(500);
+        sleep(1500);
         boWei.release();
         sleep(500);
         boWei.flip();

@@ -13,8 +13,8 @@ import java.util.List;
 
 import static org.firstinspires.ftc.teamcode.utilities.round1000;
 
-@Autonomous(name = "topRedRight", group = "hmmm7")
-public class topAuton extends LinearOpMode {
+@Autonomous(name = "topBlueRight", group = "ffffs")
+public class topBlueRight extends LinearOpMode {
     robot boWei = new robot();
     ElapsedTime timer = new ElapsedTime();
     @Override
@@ -25,7 +25,7 @@ public class topAuton extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         int cases;
         boolean counter = false;
-        boWei.location.setPosition(-62, -40, Math.PI);
+        boWei.location.setPosition(-62, 24, Math.PI);
         List<CurvePoint> goMid = new ArrayList<>();
         //List<CurvePoint> goMid = new ArrayList<>();
         //List<CurvePoint> goRight = new ArrayList<>();
@@ -33,10 +33,10 @@ public class topAuton extends LinearOpMode {
         List<CurvePoint> toPark = new ArrayList<>();
 
         goMid.add(new CurvePoint(boWei.getPosition()));
-        goMid.add(new CurvePoint(-24,-59, Math.PI));
-        goMid.add(new CurvePoint(0,-36,Math.PI));
+        goMid.add(new CurvePoint(-24,18, Math.PI));
+        goMid.add(new CurvePoint(0,36,Math.PI));
         //goLeft.add(new CurvePoint(-36,-16, Math.PI));
-        goGoal.add(new CurvePoint(12,-30, Math.PI));
+        goGoal.add(new CurvePoint(12,30, Math.PI));
 
         /*
         goMid.add(new CurvePoint(boWei.getPosition()));
@@ -48,8 +48,8 @@ public class topAuton extends LinearOpMode {
          */
 
         //toPark.add(new CurvePoint(-12, -24, Math.PI));
-        toPark.add(new CurvePoint(4,-12, Math.PI));
-        toPark.add(new CurvePoint(8, -24, Math.PI));
+        toPark.add(new CurvePoint(4,12, Math.PI));
+        toPark.add(new CurvePoint(8, 24, Math.PI));
         waitForStart();
 
         boWei.goStiff();
@@ -64,13 +64,13 @@ public class topAuton extends LinearOpMode {
         //boWei.flippyFlip.setPosition(.88);
         telemetry.update();
         if (cases == 1){
-            goGoal.add(new CurvePoint(20, -40, Math.PI)); // 40, 15
+            goGoal.add(new CurvePoint(46, 50, Math.PI)); // 40, 15
         }
         else if (cases == 0){
-            goGoal.add(new CurvePoint(42, -24, Math.PI)); //12,-40 could change angle to Math.PI/2 facing sideways
+            goGoal.add(new CurvePoint(0, 46, 0)); //12,-40 could change angle to Math.PI/2 facing sideways
         }
         else if (cases == 4){
-            goGoal.add(new CurvePoint(60,-44, Math.PI)); //15,-48
+            goGoal.add(new CurvePoint(48,48, 0)); //15,-48
         }
 
         //40, 15
@@ -85,14 +85,14 @@ public class topAuton extends LinearOpMode {
 //        boWei.rightFront.setPower(0);
 //        boWei.leftBack.setPower(0);
 //        boWei.leftFront.setPower(0);
-        boWei.turnTo(-2.68, 0.3);
+        boWei.turnTo(-2.7, 0.3);
         //telemetry.addData("position",boWei.getPosition());
         boWei.launch.setVelocity(9, AngleUnit.RADIANS);
         sleep(2000);
         boWei.collect();
         boWei.upward();
         timer.reset();
-        while (ringsShot < 4 && timer.seconds() < 7){
+        while (ringsShot < 3 && timer.seconds() < 7){
             boolean hasRing = false;
             if (boWei.name.alpha() > 200){
                 hasRing = true;
@@ -114,7 +114,7 @@ public class topAuton extends LinearOpMode {
 
         boWei.followCurveSync(goGoal,8, 0.5, 10);
         boWei.autonUnflip();
-        sleep(500);
+        sleep(1500);
         boWei.release();
         sleep(500);
         boWei.flip();
