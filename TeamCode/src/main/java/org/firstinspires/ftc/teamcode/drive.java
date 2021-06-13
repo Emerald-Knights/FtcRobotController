@@ -77,6 +77,9 @@ public class drive extends LinearOpMode{
         boolean x1Pressed = false;
         boolean x2Pressed = false;
 
+        boolean b1Pressed = false;
+        boolean turning = false;
+
         boolean flip=false;
         boolean grab = false;
 
@@ -87,7 +90,8 @@ public class drive extends LinearOpMode{
         boolean a1Pressed=false;
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-
+        double prevAngle=0;
+        double turned=0;
         boolean cheats=false;
 
         //boolean[] code = {false, false, false, false, false, false, false, false, false, false, false, false};
@@ -339,20 +343,23 @@ public class drive extends LinearOpMode{
             }
 
             //upwards
-            if(gamepad2.b&&!bIsPressed){
-                if(collecting){
-                    boWei.upwards.setPower(0);
-                    collecting=false;
-                }
-                else if(!collecting){
-                    boWei.upward();
-                    collecting=true;
-                }
-                bIsPressed=true;
-            }
-            if(!gamepad2.b){
-                bIsPressed=false;
-            }
+//            if(gamepad2.b&&!bIsPressed){
+//                if(collecting){
+//                    boWei.upwards.setPower(0);
+//                    collecting=false;
+//                }
+//                else if(!collecting){
+//                    boWei.upward();
+//                    collecting=true;
+//                }
+//                bIsPressed=true;
+//            }
+//            if(!gamepad2.b){
+//                bIsPressed=false;
+//            }
+
+
+
 
             if (gamepad2.right_trigger > 0.3){
                 boWei.upwards.setPower(0.8);
@@ -377,6 +384,34 @@ public class drive extends LinearOpMode{
                 }
                 leftPressed = true;
             }
+
+//            if (gamepad1.b && !b1Pressed){
+//                if (turning) {
+//
+//                    turning = false;
+//                }
+//                else if (!turning){
+//                    turning = true;
+//                }
+//                //b1Pressed = false;
+//                //turning = false;
+//            }
+//            if (!gamepad1.b){
+//                b1Pressed = false;
+//            }
+
+//            if(gamepad1.b && !b1Pressed){
+//                if (!turning) {
+//                    double goalAngle = angleWrap(boWei.getHeading() + Math.PI);
+//                    boWei.turnTo(goalAngle, 0.3);
+//                    turning = true;
+//                }
+//                b1Pressed = true;
+//            }
+//            if (!gamepad1.b){
+//                b1Pressed = false;
+//            }
+
 
             if(rsb && !rightPressed){
                 aimLock= !aimLock;
@@ -415,7 +450,7 @@ public class drive extends LinearOpMode{
 
                     //rx=angleDiff*boWei.kp + integral*boWei.ki + slope*boWei.kd+.3;
                     //rx= angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .3);
-                    
+
                     rx=angleDiff/Math.abs(angleDiff)*( Math.abs(angleDiff)/6.0 + .2)+slope*.15; // 1/3, -.1
                     if(Math.abs(rx)>.8){
                         rx=rx/Math.abs(rx)*.8;
@@ -426,6 +461,33 @@ public class drive extends LinearOpMode{
                 }
             }
             telemetry.addData("slope", slope);
+
+            if (gamepad1.b && !b1Pressed){
+                turning = !turning;
+                turned=0;
+                prevAngle=boWei.imu.getAngularOrientation().firstAngle;
+                turned=0;
+                b1Pressed = true;
+            }
+            if (!gamepad1.b){
+                b1Pressed = false;
+            }
+
+            if (turning) {
+                turned+=angleWrap(boWei.imu.getAngularOrientation().firstAngle-prevAngle);
+
+                prevAngle=boWei.imu.getAngularOrientation().firstAngle;
+                
+                if (turned<Math.PI) {
+                        rx=-0.8;
+                }
+                else {
+                    rx = 0;
+                }
+            }
+//            else{
+//                rx=0;
+//            }
 
             if(gamepad1.a && !a1Pressed){
                 boWei.location.setPosition(0, -36, boWei.getHeading());
@@ -479,21 +541,21 @@ public class drive extends LinearOpMode{
             oldAngle = boWei.getHeading();
 
 
-            telemetry.addData("LF", lf);
-            telemetry.addData("LB", lb);
-            telemetry.addData("RF", rf);
-            telemetry.addData("RB", rb);
+//            telemetry.addData("LF", lf);
+//            telemetry.addData("LB", lb);
+//            telemetry.addData("RF", rf);
+//            telemetry.addData("RB", rb);
+            telemetry.addData("rate", rate);
+            telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
             telemetry.addData("left", -boWei.leftOdo.getCurrentPosition());
             telemetry.addData("right", boWei.rightOdo.getCurrentPosition());
             telemetry.addData("horizontal", boWei.horizontalOdo.getCurrentPosition());
-            telemetry.addData("Diff:", (boWei.location.positionLeft + boWei.location.forwardEncoderToRadian *  angle) + (boWei.location.positionRight - boWei.location.forwardEncoderToRadian * -angle));
-            telemetry.addData("Distance:", Math.hypot(boWei.redGoal.x-boWei.getX(), boWei.redGoal.y-boWei.getY()));
+            //telemetry.addData("Diff:", (boWei.location.positionLeft + boWei.location.forwardEncoderToRadian *  angle) + (boWei.location.positionRight - boWei.location.forwardEncoderToRadian * -angle));
+            //telemetry.addData("Distance:", Math.hypot(boWei.redGoal.x-boWei.getX(), boWei.redGoal.y-boWei.getY()));
             telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
             //telemetry.addData("rings", ringsShot);
             telemetry.addData("distance based shoot?: ", distanceBasedShoot);
-            telemetry.addData("rad/s", boWei.launch.getVelocity(AngleUnit.RADIANS));
-            telemetry.addData("tick/s", boWei.launch.getVelocity());
-            telemetry.addData("rate", rate);
+            //telemetry.addData("tick/s", boWei.launch.getVelocity());
             telemetry.addData("Field oriented: ", fieldOriented);
 
 
