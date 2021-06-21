@@ -32,7 +32,7 @@ public class powerBlueLeft extends LinearOpMode {
 
         goLeft.add(new CurvePoint(boWei.getPosition()));
         goLeft.add(new CurvePoint(-24,56, Math.PI)); //add to avoid hitting ring stack
-        goLeft.add(new CurvePoint(-1,20, -2.6));
+        goLeft.add(new CurvePoint(-12,20, -2.6));
         /*
         goMid.add(new CurvePoint(boWei.getPosition()));
         goMid.add(new CurvePoint(-1.031,-6,-2.842));
@@ -193,7 +193,7 @@ public class powerBlueLeft extends LinearOpMode {
         telemetry.addData("ringsShot4",ringsShot);
         telemetry.addData("Position3", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
         telemetry.update();
-        boWei.followCurveSync(goGoal,8, 0.55, 10);
+        //boWei.followCurveSync(goGoal,8, 0.55, 10);
         boWei.autonUnflip();
         sleep(500);
         boWei.release();

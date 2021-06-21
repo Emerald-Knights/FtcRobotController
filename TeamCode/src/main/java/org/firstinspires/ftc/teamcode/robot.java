@@ -247,13 +247,13 @@ public class robot {
         grabber.setPosition(0.6);
     }
     public void flip(){
-        flippyFlip.setPosition(0.3);
+        flippyFlip.setPosition(0.18);
     }
     public void unflip(){
-        flippyFlip.setPosition(0.93);
+        flippyFlip.setPosition(0.9);
     }
     public void autonUnflip(){
-        flippyFlip.setPosition(0.88);
+        flippyFlip.setPosition(0.93);
     }
     public void goStiff(){
         stiff.setPosition(0.22);

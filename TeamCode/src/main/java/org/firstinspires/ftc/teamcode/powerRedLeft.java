@@ -23,7 +23,7 @@ public class powerRedLeft extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         int cases;
         boolean counter = false;
-        boWei.location.setPosition(-62, -24, Math.PI);
+        boWei.location.setPosition(-62, -16, Math.PI);
         List<CurvePoint> goLeft = new ArrayList<>();
         //List<CurvePoint> goMid = new ArrayList<>();
         List<CurvePoint> goGoal = new ArrayList<>();
@@ -31,7 +31,7 @@ public class powerRedLeft extends LinearOpMode {
 
         goLeft.add(new CurvePoint(boWei.getPosition()));
         //goLeft.add(new CurvePoint(-36,-16, Math.PI));
-        goLeft.add(new CurvePoint(-1,-20,-2.74));
+        goLeft.add(new CurvePoint(-10,-18,-2.74));
         /*
         goMid.add(new CurvePoint(boWei.getPosition()));
         goMid.add(new CurvePoint(-1.031,-6,-2.842));
@@ -48,20 +48,19 @@ public class powerRedLeft extends LinearOpMode {
         waitForStart();
 
 
-        boWei.goStiff();
         sleep(3000);
 
         cases=boWei.pipeline.getRings();
         telemetry.addData("rings0", cases);
-        boWei.grab();
+        //boWei.grab();
+        //boWei.goStiff();
         //boWei.grabber.setPosition(0.16);
         //boWei.autonUnflip();
-        boWei.flip();
+        //boWei.flip();
         //boWei.flippyFlip.setPosition(.88);
         telemetry.update();
         //telemetry.addData("Position", boWei.getPosition());
         //telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
-        telemetry.update();
         if (cases == 1){
             goGoal.add(new CurvePoint(40, -18, Math.PI)); // 40, 15
         }
@@ -87,30 +86,7 @@ public class powerRedLeft extends LinearOpMode {
         int a = 1;
         telemetry.addData("stop:", a);
 
-        if (boWei.getHeading() > -2.74){
-            while (Math.abs(2.74 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
-                boWei.rightBack.setPower(-0.3);
-                boWei.rightFront.setPower(-0.3);
-                boWei.leftBack.setPower(0.3);
-                boWei.leftFront.setPower(0.3);
-            }
-            boWei.rightBack.setPower(0);
-            boWei.rightFront.setPower(0);
-            boWei.leftBack.setPower(0);
-            boWei.leftFront.setPower(0);
-        }
-        else if (boWei.getHeading() < -2.74){
-            while (Math.abs(2.74 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
-                boWei.rightBack.setPower(0.3);
-                boWei.rightFront.setPower(0.3);
-                boWei.leftBack.setPower(-0.3);
-                boWei.leftFront.setPower(-0.3);
-            }
-            boWei.rightBack.setPower(0);
-            boWei.rightFront.setPower(0);
-            boWei.leftBack.setPower(0);
-            boWei.leftFront.setPower(0);
-        }
+        boWei.turnTo(-2.6 ,0.3);
         while (ringsShot == 0 && opModeIsActive()){
             telemetry.addData("rings1", ringsShot);
             telemetry.addData("ringsShot1",ringsShot);
@@ -131,17 +107,7 @@ public class powerRedLeft extends LinearOpMode {
         }
         boWei.spin.setPower(0);
         boWei.upwards.setPower(0);
-        while (Math.abs(2.802 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
-            boWei.rightBack.setPower(-0.3);
-            boWei.rightFront.setPower(-0.3);
-            boWei.leftBack.setPower(0.3);
-            boWei.leftFront.setPower(0.3);
-        }
-        boWei.rightBack.setPower(0);
-        boWei.rightFront.setPower(0);
-        boWei.leftBack.setPower(0);
-        boWei.leftFront.setPower(0);
-        //boWei.moveToPosition(boWei.getX(),boWei.getY(),0.4,-2.842);
+        boWei.turnTo(-2.7, 0.3);
         sleep(1500);
         while (ringsShot == 1 && opModeIsActive()){
             telemetry.addData("Position1", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
@@ -160,16 +126,7 @@ public class powerRedLeft extends LinearOpMode {
         }
         boWei.upwards.setPower(0);
         boWei.spin.setPower(0);
-        while (Math.abs(2.900 - Math.abs(boWei.getHeading())) > 0.05 && opModeIsActive()) {
-            boWei.rightBack.setPower(-0.3);
-            boWei.rightFront.setPower(-0.3);
-            boWei.leftBack.setPower(0.3);
-            boWei.leftFront.setPower(0.3);
-        }
-        boWei.rightBack.setPower(0);
-        boWei.rightFront.setPower(0);
-        boWei.leftBack.setPower(0);
-        boWei.leftFront.setPower(0);
+        boWei.turnTo(-2.8, 0.3);
         sleep(1500);
         while (ringsShot == 2 && opModeIsActive()){
             telemetry.addData("Position2", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
@@ -194,13 +151,14 @@ public class powerRedLeft extends LinearOpMode {
         telemetry.addData("ringsShot4",ringsShot);
         telemetry.addData("Position3", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
         telemetry.update();
-        boWei.followCurveSync(goGoal,8, 0.45, 10);
-        boWei.grabber.setPosition(0.6);
+        //boWei.followCurveSync(goGoal,8, 0.5, 8);
+        //boWei.autonUnflip();
         sleep(500);
-        boWei.flippyFlip.setPosition(0.5);
-        sleep(1000);
+        //boWei.release();
+        sleep(500);
+        //boWei.flip();
         toPark.add(0, boWei.getPosition());
-        boWei.followCurveSync(toPark,8,0.5,5);
+        boWei.followCurveSync(toPark,8,0.5,8);
         boWei.rightBack.setPower(0);
         boWei.rightFront.setPower(0);
         boWei.leftBack.setPower(0);

@@ -34,7 +34,7 @@ public class topRedRight extends LinearOpMode {
 
         goMid.add(new CurvePoint(boWei.getPosition()));
         goMid.add(new CurvePoint(-24,-59, Math.PI));
-        goMid.add(new CurvePoint(0,-36,Math.PI));
+        goMid.add(new CurvePoint(-12,-36,Math.PI));
         //goLeft.add(new CurvePoint(-36,-16, Math.PI));
         goGoal.add(new CurvePoint(12,-30, Math.PI));
 
@@ -48,19 +48,19 @@ public class topRedRight extends LinearOpMode {
          */
 
         //toPark.add(new CurvePoint(-12, -24, Math.PI));
-        toPark.add(new CurvePoint(4,-12, Math.PI));
-        toPark.add(new CurvePoint(8, -24, Math.PI));
+        toPark.add(new CurvePoint(10,-12, Math.PI));
+        toPark.add(new CurvePoint(12, -20, Math.PI));
         waitForStart();
 
-        boWei.goStiff();
         sleep(3000);
-
+        //boWei.grab();
+        //boWei.goStiff();
         cases=boWei.pipeline.getRings();
         telemetry.addData("rings0", cases);
-        boWei.grab();
+
         //boWei.grabber.setPosition(0.16);
         //boWei.autonUnflip();
-        boWei.flip();
+        //boWei.flip();
         //boWei.flippyFlip.setPosition(.88);
         telemetry.update();
         if (cases == 1){
@@ -87,7 +87,7 @@ public class topRedRight extends LinearOpMode {
 //        boWei.leftFront.setPower(0);
         boWei.turnTo(-2.68, 0.3);
         //telemetry.addData("position",boWei.getPosition());
-        boWei.launch.setVelocity(9, AngleUnit.RADIANS);
+        boWei.launch.setVelocity(9.4, AngleUnit.RADIANS);
         sleep(2000);
         boWei.collect();
         boWei.upward();
@@ -113,11 +113,11 @@ public class topRedRight extends LinearOpMode {
         dashboard.sendTelemetryPacket(packet);
 
         boWei.followCurveSync(goGoal,8, 0.5, 10);
-        boWei.autonUnflip();
+        //boWei.autonUnflip();
         sleep(500);
-        boWei.release();
+        //boWei.release();
         sleep(500);
-        boWei.flip();
+        //boWei.flip();
         toPark.add(0, boWei.getPosition());
         boWei.followCurveSync(toPark,8,0.5,5);
         boWei.rightBack.setPower(0);

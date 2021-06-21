@@ -23,7 +23,7 @@ public class powerBlueRight extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         int cases;
         boolean counter = false;
-        boWei.location.setPosition(-62, 24, Math.PI);
+        boWei.location.setPosition(-62, 16, Math.PI);
         List<CurvePoint> goLeft = new ArrayList<>();
         //List<CurvePoint> goMid = new ArrayList<>();
         //List<CurvePoint> goRight = new ArrayList<>();
@@ -32,7 +32,7 @@ public class powerBlueRight extends LinearOpMode {
 
         goLeft.add(new CurvePoint(boWei.getPosition()));
         //goLeft.add(new CurvePoint(-36,-16, Math.PI));
-        goLeft.add(new CurvePoint(-1,6, Math.PI));
+        goLeft.add(new CurvePoint(-10,18, Math.PI));
         /*
         goMid.add(new CurvePoint(boWei.getPosition()));
         goMid.add(new CurvePoint(-1.031,-6,-2.842));
@@ -50,17 +50,15 @@ public class powerBlueRight extends LinearOpMode {
 
 
         sleep(3000);
-
+        //boWei.grab();
+        //boWei.goStiff();
         cases=boWei.pipeline.getRings();
         telemetry.addData("rings0", cases);
-        boWei.grab();
+
         //boWei.grabber.setPosition(0.16);
         //boWei.autonUnflip();
-        boWei.flip();
+        //boWei.flip();
         //boWei.flippyFlip.setPosition(.88);
-        telemetry.update();
-        //telemetry.addData("Position", boWei.getPosition());
-        //telemetry.addData("Position", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
         telemetry.update();
         if (cases == 1){
             goGoal.add(new CurvePoint(46, 50, Math.PI)); // 40, 15
@@ -156,12 +154,12 @@ public class powerBlueRight extends LinearOpMode {
         telemetry.addData("ringsShot4",ringsShot);
         telemetry.addData("Position3", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
         telemetry.update();
-        boWei.followCurveSync(goGoal,8, 0.5, 10);
-        boWei.autonUnflip();
+        //boWei.followCurveSync(goGoal,8, 0.5, 10);
+        //boWei.autonUnflip();
         sleep(500);
-        boWei.release();
+        //boWei.release();
         sleep(500);
-        boWei.flip();
+       // boWei.flip();
         toPark.add(0, boWei.getPosition());
         boWei.followCurveSync(toPark,8,0.5,5);
         boWei.rightBack.setPower(0);

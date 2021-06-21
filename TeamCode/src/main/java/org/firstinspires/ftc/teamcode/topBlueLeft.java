@@ -34,7 +34,7 @@ public class topBlueLeft extends LinearOpMode {
 
         goMid.add(new CurvePoint(boWei.getPosition()));
         goMid.add(new CurvePoint(-24,59, Math.PI));
-        goMid.add(new CurvePoint(0,36,Math.PI));
+        goMid.add(new CurvePoint(-12,36,Math.PI));
         //goLeft.add(new CurvePoint(-36,-16, Math.PI));
         goGoal.add(new CurvePoint(12,30, Math.PI));
 
@@ -52,15 +52,16 @@ public class topBlueLeft extends LinearOpMode {
         toPark.add(new CurvePoint(8, -24, Math.PI));
         waitForStart();
 
-        boWei.goStiff();
-        sleep(3000);
 
+        sleep(3000);
+        //boWei.grab();
+        //boWei.goStiff();
         cases=boWei.pipeline.getRings();
         telemetry.addData("rings0", cases);
-        boWei.grab();
+
         //boWei.grabber.setPosition(0.16);
         //boWei.autonUnflip();
-        boWei.flip();
+        //boWei.flip();
         //boWei.flippyFlip.setPosition(.88);
         telemetry.update();
         if (cases == 1){
@@ -114,11 +115,11 @@ public class topBlueLeft extends LinearOpMode {
         dashboard.sendTelemetryPacket(packet);
 
         boWei.followCurveSync(goGoal,8, 0.5, 10);
-        boWei.autonUnflip();
+       // boWei.autonUnflip();
         sleep(500);
-        boWei.release();
+        //boWei.release();
         sleep(500);
-        boWei.flip();
+        //boWei.flip();
         toPark.add(0, boWei.getPosition());
         boWei.followCurveSync(toPark,8,0.5,5);
         boWei.rightBack.setPower(0);

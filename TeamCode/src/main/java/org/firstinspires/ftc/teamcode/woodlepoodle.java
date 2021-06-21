@@ -44,15 +44,15 @@ public class woodlepoodle extends LinearOpMode {
 
         waitForStart();
 
-        boWei.goStiff();
+        //boWei.goStiff();
         sleep(3000);
 
         cases=boWei.pipeline.getRings();
         telemetry.addData("rings0", cases);
-        boWei.grab();
+        //boWei.grab();
         //boWei.grabber.setPosition(0.16);
         //boWei.autonUnflip();
-        boWei.flip();
+        //boWei.flip();
         //boWei.flippyFlip.setPosition(.88);
         telemetry.update();
         if (cases == 1){
@@ -150,11 +150,11 @@ public class woodlepoodle extends LinearOpMode {
         telemetry.addData("Position3", ("("+round1000(boWei.getX())+", "+round1000( boWei.getY() ) + ", " + round1000(boWei.getHeading())+")"));
         telemetry.update();
         boWei.followCurveSync(goGoal,8, 0.55, 10);
-        boWei.autonUnflip();
+        //boWei.autonUnflip();
         sleep(500);
-        boWei.release();
+        //boWei.release();
         sleep(500);
-        boWei.flip();
+        //boWei.flip();
         //boWei.flippyFlip.setPosition(0.5);
         //sleep(500);
         toPark.add(0, boWei.getPosition());

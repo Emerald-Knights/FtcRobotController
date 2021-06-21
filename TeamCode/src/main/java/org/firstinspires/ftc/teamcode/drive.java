@@ -268,15 +268,15 @@ public class drive extends LinearOpMode{
 
 
            // telemetry.addData("grab:", grab);
-            telemetry.addData("grabPos:", boWei.grabber.getPosition());
-            //telemetry.addData("Distance:", boWei.Dora.getDistance(DistanceUnit.CM));
-            //telemetry.addData("hasRing", boWei.hasRing(boWei.thanks.getDistance(DistanceUnit.CM)));
-            telemetry.addData("rings", ringsShot);
-            telemetry.addData("hasRing", counter);
-            telemetry.addData("alpha", boWei.name.alpha());
-            telemetry.addData("red",boWei.name.red());
-            telemetry.addData("blue", boWei.name.blue());
-            telemetry.addData("green",boWei.name.green());
+//            telemetry.addData("grabPos:", boWei.grabber.getPosition());
+//            //telemetry.addData("Distance:", boWei.Dora.getDistance(DistanceUnit.CM));
+//            //telemetry.addData("hasRing", boWei.hasRing(boWei.thanks.getDistance(DistanceUnit.CM)));
+//            telemetry.addData("rings", ringsShot);
+//            telemetry.addData("hasRing", counter);
+//            telemetry.addData("alpha", boWei.name.alpha());
+//            telemetry.addData("red",boWei.name.red());
+//            telemetry.addData("blue", boWei.name.blue());
+//            telemetry.addData("green",boWei.name.green());
 
             if (gamepad1.x && !x1Pressed){
                 flip=!flip;
@@ -290,9 +290,9 @@ public class drive extends LinearOpMode{
                 x1Pressed = true;
             }
 
-            telemetry.addData("flippyFlip Position", boWei.flippyFlip.getPosition());
-            telemetry.addData("fPort", boWei.flippyFlip.getPortNumber());
-            telemetry.addData("GPort", boWei.grabber.getPortNumber());
+//            telemetry.addData("flippyFlip Position", boWei.flippyFlip.getPosition());
+//            telemetry.addData("fPort", boWei.flippyFlip.getPortNumber());
+//            telemetry.addData("GPort", boWei.grabber.getPortNumber());
             if (!gamepad1.x){
                 x1Pressed = false;
             }
@@ -310,11 +310,11 @@ public class drive extends LinearOpMode{
             //launcher
             if(gamepad2.a && !aIsPressed && !gamepad2.start){
                 if (isMoving) {
-                    telemetry.speak("Anthony is gay");
+                    //telemetry.speak("Anthony is gay");
                     isMoving = false;
                 }
                 else if (!isMoving){
-                    telemetry.speak("pew pew");
+                    //telemetry.speak("pew pew");
                     isMoving = true;
                 }
                 aIsPressed = true;
